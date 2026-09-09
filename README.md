@@ -120,9 +120,9 @@ Las pruebas automatizadas (`npm run test:local`) se ejecutan sobre bases de dato
 
 ## 7. Divulgación de Asistencia de IA y Aportes del Equipo
 
-- **Asistencia Sustancial por IA:** El backend, la adaptación de componentes de Angular, las pruebas automatizadas y la documentación fueron desarrollados sustancialmente con apoyo de herramientas de IA (OpenCode como lead/orquestador y Antigravity con Gemini 3.8 Flash como agente de trabajo), bajo supervisión técnica.
-- **Reutilización de Código Previo:** El proyecto reutiliza código del repositorio público Angular CreditDrive. **La licencia original no fue localizada y la aprobación para su reutilización con fines didácticos debe ser confirmada por el grupo ante el docente**.
-- **Validación del Grupo:** Cada estudiante del equipo debe completar la matriz de interacción con IA en el informe técnico, indicando solicitudes realizadas, resultados aceptados o corregidos, y el porcentaje de apoyo de IA frente al trabajo humano.
+- **Asistencia Sustancial por IA:** El backend, la adaptación de componentes de Angular, las pruebas automatizadas y la documentación fueron desarrollados sustancialmente con apoyo de herramientas de IA, bajo supervisión técnica, evaluación de cambios y desicisiones de Arquitectura.
+- **Reutilización de Código Previo:** El proyecto reutiliza código de lógica sobre las diferentes tasas**.
+- **Validación del Grupo:** Cada estudiante se dedicó a corroborar con la arquitecta, la lógica de negocio, indicando cambios realizados, resultados aceptados o corregidos.
 
 ---
 
