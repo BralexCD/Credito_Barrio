@@ -1,0 +1,176 @@
+<header class="simulation-list-header">
+  <div>
+    <h1>{{ 'simulation.list-title' | translate }}</h1>
+    <p>{{ 'simulation.list-subtitle' | translate }}</p>
+  </div>
+
+  <button mat-flat-button class="new-simulation-button" (click)="navigateToNew()">
+    <mat-icon>add</mat-icon>
+    {{ 'simulation.new' | translate }}
+  </button>
+</header>
+
+@if (store.loading()) {
+<mat-spinner diameter="40"></mat-spinner>
+}
+
+@if (store.error()) {
+<p class="simulation-list-error">{{ store.error() }}</p>
+}
+
+<section class="simulation-filter-row" aria-label="Filtros visuales">
+  <label class="filter-card">
+    <span>{{ 'simulation.filter-client' | translate }}</span>
+    <select [value]="clientFilter()" (change)="updateClientFilter($any($event.target).value)">
+      <option value="all">{{ 'simulation.filter-all-clients' | translate }}</option>
+
+      @for (client of clientStore.clients(); track client.id) {
+      <option [value]="client.id">{{ client.fullName }}</option>
+      }
+    </select>
+  </label>
+
+  <label class="filter-card">
+    <span>{{ 'simulation.filter-date' | translate }}</span>
+    <select [value]="dateFilter()" (change)="updateDateFilter($any($event.target).value)">
+      <option value="all">{{ 'simulation.filter-any-date' | translate }}</option>
+      <option value="month">{{ 'simulation.filter-current-month' | translate }}</option>
+      <option value="year">{{ 'simulation.filter-current-year' | translate }}</option>
+    </select>
+  </label>
+
+  <label class="filter-card">
+    <span>Filtro por préstamo</span>
+    <select [value]="amountFilter()" (change)="updateAmountFilter($any($event.target).value)">
+      <option value="all">{{ 'simulation.filter-any-amount' | translate }}</option>
+      <option value="low">{{ 'simulation.filter-low-amount' | translate }}</option>
+      <option value="mid">{{ 'simulation.filter-mid-amount' | translate }}</option>
+      <option value="high">{{ 'simulation.filter-high-amount' | translate }}</option>
+    </select>
+  </label>
+
+  <button mat-flat-button class="apply-filter-button" type="button" (click)="resetFilters()">
+    <mat-icon>filter_list</mat-icon>
+    {{ 'simulation.clear-filters' | translate }}
+  </button>
+</section>
+
+<div class="simulation-table-wrapper">
+  <table
+    mat-table
+    [dataSource]="dataSource()"
+    matSort
+    matSortActive="disbursementDate"
+    matSortDirection="desc"
+    matSortDisableClear>
+
+    <ng-container matColumnDef="client">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ 'simulation.client-column' | translate }}
+      </th>
+
+      <td mat-cell *matCellDef="let simulation">
+        <div class="client-cell">
+          <span class="client-avatar">{{ clientInitials(simulation.clientId) }}</span>
+          <strong>{{ clientName(simulation.clientId) }}</strong>
+        </div>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="vehicle">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ 'simulation.vehicle-column' | translate }}
+      </th>
+
+      <td mat-cell *matCellDef="let simulation">
+        {{ vehicleName(simulation.vehicleId) }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="loanAmount">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        Préstamo
+      </th>
+
+      <td mat-cell *matCellDef="let simulation" class="amount-cell">
+        {{ simulation.loanAmount | number: '1.2-2' }} {{ simulation.currency }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="regularQuota">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        Cuota regular
+      </th>
+
+      <td mat-cell *matCellDef="let simulation" class="amount-cell">
+        {{ simulation.regularQuota | number: '1.2-2' }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="tcea">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ 'simulation.tcea-column' | translate }}
+      </th>
+
+      <td mat-cell *matCellDef="let simulation">
+        {{ simulation.tcea | percent: '1.2-4' }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="disbursementDate">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ 'simulation.date-column' | translate }}
+      </th>
+
+      <td mat-cell *matCellDef="let simulation">
+        {{ simulation.disbursementDate }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>
+        {{ 'simulation.actions' | translate }}
+      </th>
+
+      <td mat-cell *matCellDef="let simulation" class="simulation-actions">
+        <button
+          mat-button
+          class="view-more-button"
+          [attr.aria-label]="'simulation.view' | translate"
+          (click)="viewSimulation(simulation.id)">
+          {{ 'simulation.view-more' | translate }}
+        </button>
+
+        <button
+          mat-icon-button
+          class="action-button delete-button"
+          [attr.aria-label]="'simulation.delete' | translate"
+          (click)="deleteSimulation(simulation.id)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+  <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+</div>
+
+<section class="simulation-summary-grid">
+  <article class="summary-stat primary-stat">
+    <span>Total préstamos</span>
+    <strong>{{ totalLoanAmount() | number: '1.2-2' }}</strong>
+  </article>
+
+  <article class="summary-stat">
+    <span>{{ 'simulation.saved-count' | translate }}</span>
+    <strong>{{ filteredSimulations().length }}</strong>
+  </article>
+
+  <article class="summary-stat">
+    <span>{{ 'simulation.average-tcea' | translate }}</span>
+    <strong>{{ averageTcea() | percent: '1.2-4' }}</strong>
+  </article>
+</section>

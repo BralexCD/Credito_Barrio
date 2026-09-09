@@ -1,0 +1,128 @@
+:host {
+  display: block;
+}
+
+.vehicle-list-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.vehicle-list-header h1 {
+  margin: 0;
+  color: var(--credit-primary);
+  font-size: 30px;
+  font-weight: 800;
+}
+
+.vehicle-list-header p {
+  margin: 8px 0 0;
+  color: var(--credit-muted);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.new-vehicle-button {
+  height: 48px;
+  border-radius: 7px;
+  background: var(--credit-primary) !important;
+  color: #ffffff !important;
+  font-weight: 800;
+}
+
+.vehicle-list-error {
+  color: var(--mat-sys-error, #b3261e);
+  font-weight: 600;
+}
+
+.vehicle-table-wrapper {
+  border-radius: 8px;
+  background: var(--credit-surface);
+  box-shadow: var(--credit-shadow);
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  min-width: 760px;
+}
+
+.vehicle-thumb {
+  display: block;
+  width: 64px;
+  height: 44px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.vehicle-thumb-placeholder {
+  display: grid;
+  place-items: center;
+  background: var(--credit-primary-muted);
+  color: var(--credit-primary);
+}
+
+.vehicle-year {
+  display: block;
+  color: var(--credit-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 76px;
+  padding: 4px 9px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.status-active {
+  background: var(--credit-primary-soft);
+  color: #ffffff;
+}
+
+.status-inactive {
+  background: #e8e0ea;
+  color: #65596b;
+}
+
+.vehicle-actions {
+  white-space: nowrap;
+}
+
+.action-button {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+}
+
+.action-button mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.edit-button {
+  color: var(--credit-primary);
+}
+
+.delete-button {
+  color: #dc3d4a;
+}
+
+@media (max-width: 720px) {
+  .vehicle-list-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .new-vehicle-button {
+    width: 100%;
+  }
+}

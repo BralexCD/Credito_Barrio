@@ -1,0 +1,10 @@
+:host {
+  display: block;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+mat-card {
+  background-color: var(--credit-surface, #ffffff) !important;
+  color: var(--credit-text, #25212c);
+}

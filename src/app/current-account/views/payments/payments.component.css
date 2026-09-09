@@ -1,0 +1,89 @@
+.payments-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.page-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--credit-primary-strong, #4a2f87);
+  margin: 0 0 4px;
+}
+
+.page-subtitle {
+  font-size: 13px;
+  color: var(--credit-muted, #6f687a);
+  margin: 0;
+}
+
+.table-card {
+  background: var(--credit-surface, #ffffff);
+  border: 1px solid var(--credit-border, #ded8e7);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+
+.data-table th {
+  background: #f8fafc;
+  padding: 12px 14px;
+  font-weight: 700;
+  color: var(--credit-muted, #6f687a);
+  border-bottom: 1px solid var(--credit-border, #ded8e7);
+  white-space: nowrap;
+}
+
+.data-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f1edf5;
+  color: var(--credit-text, #25212c);
+  vertical-align: middle;
+}
+
+.code-id {
+  font-family: monospace;
+  font-weight: 700;
+  color: var(--credit-primary, #543894);
+}
+
+.num-cell {
+  font-weight: 600;
+}
+
+.total-cell {
+  font-weight: 800;
+  color: var(--credit-primary-strong, #4a2f87);
+}
+
+.warn-cell {
+  color: #c2410c;
+}
+
+.success-cell {
+  color: #15803d;
+}
+
+.empty-cell {
+  text-align: center;
+  padding: 32px;
+  color: var(--credit-muted, #6f687a);
+}

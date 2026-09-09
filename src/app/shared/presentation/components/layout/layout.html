@@ -1,0 +1,19 @@
+<mat-sidenav-container class="layout-container" [hasBackdrop]="isMobile()">
+  <mat-sidenav
+    class="layout-sidenav"
+    [mode]="sidenavMode()"
+    [opened]="sidenavOpened()"
+    [class.collapsed]="sidebarCollapsed()"
+    (openedChange)="onSidenavOpenedChange($event)"
+  >
+    <app-sidebar [collapsed]="sidebarCollapsed()" (menuToggle)="toggle()" (navigate)="closeMobileDrawer()"/>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="layout-body" [class.collapsed]="sidebarCollapsed()">
+    <app-header (menuToggle)="toggle()"/>
+    <main class="layout-content">
+      <router-outlet/>
+    </main>
+    <app-footer-content/>
+  </mat-sidenav-content>
+</mat-sidenav-container>

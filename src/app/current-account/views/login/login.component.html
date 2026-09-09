@@ -1,0 +1,129 @@
+<div class="login-wrapper">
+  <div class="login-card">
+    <div class="login-header">
+      <div class="login-icon-circle">
+        <span class="material-icons">account_balance_wallet</span>
+      </div>
+      <h1 class="login-title">Crédito Barrio</h1>
+      <p class="login-subtitle">Sistema de Cuentas Corrientes y Crédito Rotativo Local</p>
+    </div>
+
+    @if (errorMessage()) {
+      <div class="error-banner" role="alert">
+        <span class="material-icons">error_outline</span>
+        <span>{{ errorMessage() }}</span>
+      </div>
+    }
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form" novalidate>
+      <div class="form-group">
+        <label for="username" class="form-label">Nombre de usuario</label>
+        <div class="input-container">
+          <span class="material-icons input-icon">person</span>
+          <input
+            id="username"
+            type="text"
+            formControlName="username"
+            class="form-input"
+            [class.input-invalid]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"
+            placeholder="Ej. bodega, plataforma, cliente"
+            autocomplete="username"
+            required
+          />
+        </div>
+        @if (loginForm.get('username')?.hasError('required') && loginForm.get('username')?.touched) {
+          <span class="validation-message">El usuario es requerido.</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="password" class="form-label">Contraseña de acceso</label>
+        <div class="input-container">
+          <span class="material-icons input-icon">lock</span>
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            class="form-input"
+            [class.input-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            required
+          />
+        </div>
+        @if (loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched) {
+          <span class="validation-message">La contraseña es requerida.</span>
+        }
+      </div>
+
+      <button
+        type="submit"
+        class="submit-btn"
+        [disabled]="loading() || loginForm.invalid"
+      >
+        @if (loading()) {
+          <span class="spinner"></span>
+          <span>Autenticando...</span>
+        } @else {
+          <span class="material-icons">login</span>
+          <span>Ingresar al Sistema</span>
+        }
+      </button>
+    </form>
+
+    <!-- Credenciales de Demostración Local -->
+    <div class="demo-credentials-section">
+      <div class="demo-title">
+        <span class="material-icons">key</span>
+        <span>Credenciales de Demostración Local</span>
+      </div>
+      <p class="demo-help">Haga clic en cualquiera para autocompletar:</p>
+
+      <div class="demo-buttons-grid">
+        <button
+          type="button"
+          class="demo-chip"
+          (click)="quickLogin('plataforma', 'Barrio2026!')"
+          title="Ingresar como Administrador de Plataforma"
+        >
+          <span class="chip-role">Admin Plataforma</span>
+          <span class="chip-user">plataforma</span>
+        </button>
+
+        <button
+          type="button"
+          class="demo-chip"
+          (click)="quickLogin('bodega', 'Barrio2026!')"
+          title="Ingresar como Comercio Principal (Bodega)"
+        >
+          <span class="chip-role">Comercio 1 (Bodega)</span>
+          <span class="chip-user">bodega</span>
+        </button>
+
+        <button
+          type="button"
+          class="demo-chip"
+          (click)="quickLogin('salon', 'Barrio2026!')"
+          title="Ingresar como Segundo Comercio (Salón)"
+        >
+          <span class="chip-role">Comercio 2 (Salón)</span>
+          <span class="chip-user">salon</span>
+        </button>
+
+        <button
+          type="button"
+          class="demo-chip"
+          (click)="quickLogin('cliente', 'Barrio2026!')"
+          title="Ingresar como Cliente de Comercio"
+        >
+          <span class="chip-role">Cliente Titular</span>
+          <span class="chip-user">cliente</span>
+        </button>
+      </div>
+
+      <div class="demo-footer">
+        <span>Contraseña común: <code>Barrio2026!</code></span>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,90 @@
+﻿<header class="dashboard-header">
+  <h1>{{ 'dashboard.title' | translate }}</h1>
+  <p>{{ 'dashboard.subtitle' | translate: { name: currentUserName() } }}</p>
+</header>
+
+<section class="kpi-grid">
+  @for (kpi of kpis(); track kpi.label) {
+    <mat-card class="kpi-card">
+      <mat-card-content class="kpi-content">
+        <div class="kpi-topline">
+          <span class="kpi-icon-wrap">
+            <mat-icon>{{ kpi.icon }}</mat-icon>
+          </span>
+        </div>
+        <span class="kpi-label">
+          {{ kpi.label | translate }}
+          <mat-icon class="kpi-help" [matTooltip]="kpi.help | translate">help_outline</mat-icon>
+        </span>
+        <strong class="kpi-value">
+          @switch (kpi.format) {
+            @case ('percent') {
+              {{ kpi.value | percent: '1.2-4' }}
+            }
+            @case ('decimal') {
+              {{ kpi.value | number: '1.2-2' }}
+            }
+            @default {
+              {{ kpi.value | number: '1.0-0' }}
+            }
+          }
+        </strong>
+      </mat-card-content>
+    </mat-card>
+  }
+</section>
+
+<section class="quick-actions">
+  <h2>{{ 'dashboard.quick.title' | translate }}</h2>
+  <div class="quick-buttons">
+    <a mat-flat-button class="quick-button quick-primary" routerLink="/clients">
+      <mat-icon>person_add</mat-icon>
+      {{ 'dashboard.quick.new-client' | translate }}
+    </a>
+    <a mat-flat-button class="quick-button quick-secondary" routerLink="/simulator">
+      <mat-icon>insert_chart</mat-icon>
+      {{ 'dashboard.quick.new-simulation' | translate }}
+    </a>
+    <a mat-flat-button class="quick-button quick-secondary" routerLink="/simulations">
+      <mat-icon>visibility</mat-icon>
+      {{ 'dashboard.quick.view-simulations' | translate }}
+    </a>
+  </div>
+</section>
+
+<section class="dashboard-lower-grid">
+  <mat-card class="recent-card">
+    <mat-card-content>
+      <div class="section-title-row">
+        <h2>{{ 'dashboard.recent.title' | translate }}</h2>
+        <a routerLink="/simulations">{{ 'dashboard.recent.view-all' | translate }} <mat-icon>open_in_new</mat-icon></a>
+      </div>
+
+      <table class="recent-table">
+        <thead>
+          <tr>
+            <th>{{ 'dashboard.recent.client' | translate }}</th>
+            <th>{{ 'dashboard.recent.vehicle' | translate }}</th>
+            <th>{{ 'dashboard.recent.amount' | translate }}</th>
+            <th>{{ 'dashboard.recent.status' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (simulation of recentSimulations(); track simulation.id) {
+            <tr>
+              <td>{{ clientName(simulation.clientId) }}</td>
+              <td>{{ vehicleName(simulation.vehicleId) }}</td>
+              <td>{{ simulation.financedAmount | number: '1.2-2' }}</td>
+              <td><span class="status-pill success">{{ 'dashboard.recent.registered' | translate }}</span></td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4" class="empty-cell">{{ 'dashboard.recent.empty' | translate }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </mat-card-content>
+  </mat-card>
+
+</section>

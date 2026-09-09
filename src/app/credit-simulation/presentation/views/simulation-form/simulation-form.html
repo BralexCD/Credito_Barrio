@@ -1,0 +1,525 @@
+<div class="simulation-form-page">
+  <header class="simulation-page-header">
+    <div>
+      <h1>{{ 'simulation.simulator-title' | translate }}</h1>
+      <p>{{ 'simulation.simulator-subtitle' | translate }}</p>
+    </div>
+
+    <a mat-flat-button class="view-simulations-button" routerLink="/simulations">
+      <mat-icon>visibility</mat-icon>
+      {{ 'simulation.list-title' | translate }}
+    </a>
+  </header>
+
+  <div class="simulation-workspace">
+    <mat-card class="simulation-form-card">
+      <mat-card-header class="simulation-form-header">
+        <mat-icon class="simulation-form-icon" aria-hidden="true">tune</mat-icon>
+        <mat-card-title>{{ 'simulation.parameters-title' | translate }}</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <form class="simulation-form" [formGroup]="form" (ngSubmit)="simulate()">
+
+          <h3 class="simulation-section-title">
+            <span>1.</span>
+            {{ 'simulation.client-data-title' | translate }}
+          </h3>
+
+          <div class="form-grid">
+            <mat-form-field appearance="outline" floatLabel="always">
+              <mat-label>{{ 'simulation.client' | translate }}</mat-label>
+              <mat-select formControlName="clientId">
+                @for (client of clientStore.clients(); track client.id) {
+                <mat-option [value]="client.id">{{ client.fullName }}</mat-option>
+                }
+              </mat-select>
+              @if (form.controls.clientId.hasError('required')) {
+              <mat-error>{{ 'simulation.client-required' | translate }}</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'simulation.currency' | translate }}</mat-label>
+              <mat-select formControlName="currency">
+                <mat-option value="PEN">PEN</mat-option>
+                <mat-option value="USD">USD</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Tipo de cambio USD/PEN</mat-label>
+              <input
+                matInput
+                type="number"
+                formControlName="exchangeRateUsdPen"
+                step="0.0001" />
+
+              <mat-hint>1 USD = 3.41 PEN</mat-hint>
+
+              @if (form.controls.exchangeRateUsdPen.hasError('required')) {
+              <mat-error>El tipo de cambio es obligatorio.</mat-error>
+              }
+
+              @if (form.controls.exchangeRateUsdPen.hasError('min')) {
+              <mat-error>El tipo de cambio debe ser mayor a 0.</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Fecha de desembolso</mat-label>
+              <input matInput type="date" formControlName="disbursementDate" />
+              @if (form.controls.disbursementDate.hasError('required')) {
+              <mat-error>{{ 'simulation.disbursement-date-required' | translate }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <h3 class="simulation-section-title">
+            <span>2.</span>
+            {{ 'simulation.vehicle-data-title' | translate }}
+          </h3>
+
+          <div class="form-grid">
+            <mat-form-field appearance="outline" floatLabel="always">
+              <mat-label>{{ 'simulation.vehicle' | translate }}</mat-label>
+              <mat-select formControlName="vehicleId">
+                @for (vehicle of vehicleStore.vehicles(); track vehicle.id) {
+                <mat-option [value]="vehicle.id">{{ vehicle.displayName }}</mat-option>
+                }
+              </mat-select>
+              @if (form.controls.vehicleId.hasError('required')) {
+              <mat-error>{{ 'simulation.vehicle-required' | translate }}</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'simulation.vehicle-price' | translate }}</mat-label>
+              <input matInput type="number" formControlName="vehiclePrice" />
+              @if (form.controls.vehiclePrice.hasError('required')) {
+              <mat-error>{{ 'simulation.vehicle-price-required' | translate }}</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <h3 class="simulation-section-title">
+            <span>3.</span>
+            Condiciones del crédito
+          </h3>
+
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'simulation.initial-fee-percentage' | translate }}</mat-label>
+              <input matInput type="number" formControlName="initialFeePercentage" />
+              @if (form.controls.initialFeePercentage.hasError('required')) {
+              <mat-error>{{ 'simulation.initial-fee-percentage-required' | translate }}</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'simulation.term-months' | translate }}</mat-label>
+              <input matInput type="number" formControlName="termMonths" />
+              @if (form.controls.termMonths.hasError('required')) {
+              <mat-error>{{ 'simulation.term-months-required' | translate }}</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Cuota final / cuotón (%)</mat-label>
+              <input matInput type="number" formControlName="finalQuotaPercentage" />
+              @if (form.controls.finalQuotaPercentage.hasError('required')) {
+              <mat-error>La cuota final es obligatoria.</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'simulation.rate-type' | translate }}</mat-label>
+              <mat-select formControlName="rateType">
+                <mat-option value="EFECTIVA">Efectiva</mat-option>
+                <mat-option value="NOMINAL">Nominal</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Periodo de la tasa</mat-label>
+              <mat-select formControlName="ratePeriod">
+                @for (option of ratePeriodOptions; track option) {
+                <mat-option [value]="option">
+                  {{ ratePeriodLabel(option) }}
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Valor de tasa (%)</mat-label>
+              <input matInput type="number" formControlName="interestRate" />
+              @if (form.controls.interestRate.hasError('required')) {
+              <mat-error>{{ 'simulation.interest-rate-required' | translate }}</mat-error>
+              }
+            </mat-form-field>
+
+            @if (form.controls.rateType.value === 'NOMINAL') {
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'simulation.capitalization' | translate }}</mat-label>
+              <mat-select formControlName="capitalization">
+                @for (option of capitalizationOptions; track option) {
+                <mat-option [value]="option">
+                  {{ ('simulation.capitalization-' + option.toLowerCase()) | translate }}
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            }
+
+            <mat-form-field appearance="outline">
+              <mat-label>Gracia total</mat-label>
+              <input matInput type="number" formControlName="totalGracePeriods" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Gracia parcial</mat-label>
+              <input matInput type="number" formControlName="partialGracePeriods" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Tasa de oportunidad TEA (%)</mat-label>
+              <input matInput type="number" formControlName="opportunityTeaPercent" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Frecuencia de pago en días</mat-label>
+              <input matInput type="number" formControlName="paymentFrequencyDays" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" floatLabel="always" class="readonly-field">
+              <mat-label>Días por año</mat-label>
+              <input
+                matInput
+                type="number"
+                formControlName="daysPerYear"
+                readonly />
+            </mat-form-field>
+
+          </div>
+
+          <h3 class="simulation-section-title">
+            <span>4.</span>
+            Costos periódicos
+          </h3>
+
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'simulation.portes' | translate }}</mat-label>
+              <input matInput type="number" formControlName="portes" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>GPS</mat-label>
+              <input matInput type="number" formControlName="gps" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Gastos administrativos</mat-label>
+              <input matInput type="number" formControlName="administrativeExpenses" />
+            </mat-form-field>
+          </div>
+
+          <h3 class="simulation-section-title compact-title">
+            Seguros
+          </h3>
+
+          <div class="insurance-rows" formArrayName="insuranceLines">
+            @for (group of insuranceLines.controls; track $index; let i = $index) {
+            <div class="insurance-row" [formGroupName]="i">
+              <mat-checkbox formControlName="applies">
+                {{ group.controls.name.value }}
+              </mat-checkbox>
+
+              <mat-form-field appearance="outline" class="insurance-rate-field">
+                <mat-label>Tasa (%)</mat-label>
+                <input matInput type="number" formControlName="rateValue" />
+              </mat-form-field>
+            </div>
+            }
+          </div>
+
+          <h3 class="simulation-section-title compact-title">
+            Gastos iniciales financiados
+          </h3>
+
+          <div class="expense-rows" formArrayName="additionalExpenses">
+            @for (group of additionalExpenses.controls; track $index; let i = $index) {
+            <div class="expense-row initial-expense-row" [formGroupName]="i">
+              <mat-form-field appearance="outline" floatLabel="always">
+                <mat-label>{{ 'simulation.expense-concept' | translate }}</mat-label>
+                <input matInput formControlName="concept" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" floatLabel="always">
+                <mat-label>Monto financiado</mat-label>
+                <input matInput type="number" formControlName="amount" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="expense-description-field" floatLabel="always">
+                <mat-label>{{ 'simulation.expense-description' | translate }}</mat-label>
+                <input matInput formControlName="description" />
+              </mat-form-field>
+
+              <button
+                mat-icon-button
+                type="button"
+                aria-label="Eliminar gasto inicial financiado"
+                (click)="removeExpense(i)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+            }
+
+            <div class="expense-actions">
+              <button
+                mat-stroked-button
+                type="button"
+                class="add-expense-button"
+                (click)="addInitialFinancedExpense()">
+                <mat-icon>add</mat-icon>
+                Agregar gasto inicial financiado
+              </button>
+            </div>
+          </div>
+
+          @if (store.error()) {
+          <p class="simulation-form-error">{{ store.error() }}</p>
+          }
+
+          <div class="form-actions">
+            <button mat-stroked-button type="button" routerLink="/simulations">
+              {{ 'simulation.cancel' | translate }}
+            </button>
+
+            <button mat-flat-button class="simulation-form-submit" type="submit" [disabled]="form.invalid">
+              {{ 'simulation.simulate' | translate }}
+            </button>
+
+            @if (result()) {
+            <button
+              mat-flat-button
+              class="simulation-form-save"
+              type="button"
+              [disabled]="store.loading()"
+              (click)="save()">
+              {{ 'simulation.save' | translate }}
+            </button>
+            }
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <aside class="simulation-summary-panel">
+      <section class="summary-card projected-summary">
+        <h2>{{ 'simulation.projected-summary-title' | translate }}</h2>
+
+        <div class="summary-line">
+          <span>{{ 'simulation.vehicle-price' | translate }}</span>
+          <strong>{{ form.controls.vehiclePrice.value | number: '1.2-2' }}</strong>
+        </div>
+
+        <div class="summary-line">
+          <span>{{ 'simulation.initial-fee-percentage' | translate }}</span>
+          <strong>
+            - {{ (form.controls.vehiclePrice.value * form.controls.initialFeePercentage.value / 100) | number: '1.2-2' }}
+          </strong>
+        </div>
+
+        <div class="summary-line">
+          <span>Cuotón final</span>
+          <strong>
+            {{ (form.controls.vehiclePrice.value * form.controls.finalQuotaPercentage.value / 100) | number: '1.2-2' }}
+          </strong>
+        </div>
+
+        <div class="summary-line highlight-line">
+          <span>Préstamo</span>
+          <strong>
+            @if (result(); as simulationResult) {
+            {{ simulationResult.loanAmount | number: '1.2-2' }}
+            } @else {
+            {{ (form.controls.vehiclePrice.value * (1 - form.controls.initialFeePercentage.value / 100)) | number: '1.2-2' }}
+            }
+          </strong>
+        </div>
+
+        <div class="monthly-payment-card">
+          <span>Cuota regular</span>
+          <strong>
+            @if (result(); as simulationResult) {
+            {{ simulationResult.regularQuota | number: '1.2-2' }}
+            } @else {
+            0.00
+            }
+          </strong>
+          <small>{{ 'simulation.estimated-note' | translate }}</small>
+        </div>
+
+        <div class="summary-metrics">
+          <span>{{ 'simulation.tcea' | translate }}</span>
+          <strong>
+            @if (result(); as simulationResult) {
+            {{ simulationResult.tcea | percent: '1.2-4' }}
+            } @else {
+            -
+            }
+          </strong>
+
+          <span>{{ 'simulation.term-months' | translate }}</span>
+          <strong>{{ form.controls.termMonths.value }} cuotas</strong>
+        </div>
+
+        <button mat-flat-button class="quote-button" type="button" [disabled]="!result()" (click)="save()">
+          <mat-icon>download</mat-icon>
+          {{ 'simulation.save' | translate }}
+        </button>
+      </section>
+
+      <section class="summary-card assistant-card">
+        <mat-icon aria-hidden="true">verified_user</mat-icon>
+        <div>
+          <h3>{{ 'simulation.virtual-assistant-title' | translate }}</h3>
+          <p>{{ 'simulation.virtual-assistant-copy' | translate }}</p>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  @if (result(); as simulationResult) {
+  <div class="simulation-results">
+    <h3 class="simulation-section-title">
+      {{ 'simulation.results-title' | translate }}
+    </h3>
+
+    <div class="results-grid">
+      <div class="result-card">
+        <span class="result-label">Cuota inicial</span>
+        <span class="result-value">{{ simulationResult.initialFeeAmount | number: '1.2-2' }}</span>
+      </div>
+
+      <div class="result-card">
+        <span class="result-label">Préstamo</span>
+        <span class="result-value">{{ simulationResult.loanAmount | number: '1.2-2' }}</span>
+      </div>
+
+      <div class="result-card">
+        <span class="result-label">Cuotón final</span>
+        <span class="result-value">{{ simulationResult.finalQuotaAmount | number: '1.2-2' }}</span>
+      </div>
+
+      <div class="result-card">
+        <span class="result-label">Valor presente cuotón</span>
+        <span class="result-value">{{ simulationResult.presentValueFinalQuota | number: '1.2-2' }}</span>
+      </div>
+
+      <div class="result-card">
+        <span class="result-label">Saldo regular financiado</span>
+        <span class="result-value">{{ simulationResult.regularFinancedBalance | number: '1.2-2' }}</span>
+      </div>
+
+      <div class="result-card">
+        <span class="result-label">Tasa efectiva del periodo</span>
+        <span class="result-value">{{ simulationResult.periodEffectiveRate | percent: '1.2-4' }}</span>
+      </div>
+
+      <div class="result-card">
+        <span class="result-label">Cuota regular</span>
+        <span class="result-value">{{ simulationResult.regularQuota | number: '1.2-2' }}</span>
+      </div>
+
+      <div class="result-card">
+        <span class="result-label">{{ 'simulation.tcea' | translate }}</span>
+        <span class="result-value">{{ simulationResult.tcea | percent: '1.2-4' }}</span>
+      </div>
+
+      <div class="result-card">
+        <span class="result-label">{{ 'simulation.van' | translate }}</span>
+        <span class="result-value">{{ simulationResult.van | number: '1.2-2' }}</span>
+      </div>
+
+      <div class="result-card">
+        <span class="result-label">{{ 'simulation.tir' | translate }}</span>
+        <span class="result-value">{{ simulationResult.tir | percent: '1.2-4' }}</span>
+      </div>
+    </div>
+
+    <h3 class="simulation-section-title">
+      {{ 'simulation.schedule-title' | translate }}
+    </h3>
+
+    <div class="schedule-table-wrapper">
+      <table class="schedule-table excel-schedule-table">
+        <thead>
+        <tr>
+          <th>N°</th>
+          <th>PG</th>
+          <th>Tipo flujo</th>
+
+          <th>SICF</th>
+          <th>ICF</th>
+          <th>ACF</th>
+          <th>Seg. Des. CF</th>
+          <th>SFCF</th>
+
+          <th>SI</th>
+          <th>I</th>
+          <th>Cuota</th>
+          <th>A</th>
+          <th>Seg. Des.</th>
+          <th>SF</th>
+
+          <th>Seg. Riesgo</th>
+          <th>GPS</th>
+          <th>Portes</th>
+          <th>Gastos adm.</th>
+          <th>Otros gastos</th>
+          <th>Cuota final</th>
+          <th>Pago total</th>
+          <th>Flujo caja</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        @for (period of simulationResult.schedule; track period.installmentNumber) {
+        <tr [class.balloon-row]="period.isBalloonPayment">
+          <td>{{ period.installmentNumber }}</td>
+          <td class="pg-cell">{{ pgLabel(period.periodType, period.cashFlowType) }}</td>
+          <td>{{ cashFlowTypeLabel(period.cashFlowType) }}</td>
+
+          <td>{{ period.initialFinalQuotaBalance | number: '1.2-2' }}</td>
+          <td class="interest-cell">{{ period.finalQuotaInterest | number: '1.2-2' }}</td>
+          <td>{{ period.finalQuotaAmortization | number: '1.2-2' }}</td>
+          <td>{{ period.finalQuotaDesgravamen | number: '1.2-2' }}</td>
+          <td>{{ period.finalFinalQuotaBalance | number: '1.2-2' }}</td>
+
+          <td>{{ period.initialRegularBalance | number: '1.2-2' }}</td>
+          <td class="interest-cell">{{ period.regularInterest | number: '1.2-2' }}</td>
+          <td>{{ period.regularQuota | number: '1.2-2' }}</td>
+          <td>{{ period.regularAmortization | number: '1.2-2' }}</td>
+          <td>{{ period.regularDesgravamen | number: '1.2-2' }}</td>
+          <td>{{ period.finalRegularBalance | number: '1.2-2' }}</td>
+
+          <td>{{ period.riskInsurance | number: '1.2-2' }}</td>
+          <td>{{ period.gps | number: '1.2-2' }}</td>
+          <td>{{ period.portes | number: '1.2-2' }}</td>
+          <td>{{ period.administrativeExpenses | number: '1.2-2' }}</td>
+          <td>{{ period.otherExpenses | number: '1.2-2' }}</td>
+          <td>{{ period.balloonPayment | number: '1.2-2' }}</td>
+          <td class="payment-cell">{{ period.totalPayment | number: '1.2-2' }}</td>
+          <td>{{ period.cashFlow | number: '1.2-2' }}</td>
+        </tr>
+        }
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+  }
+</div>

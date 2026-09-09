@@ -1,0 +1,79 @@
+<div class="client-form-page">
+  <mat-card class="client-form-card">
+    <mat-card-header class="client-form-header">
+      <mat-icon class="client-form-icon" aria-hidden="true">group_add</mat-icon>
+      <mat-card-title>{{ (isEdit ? 'clients.edit-title' : 'clients.new-title') | translate }}</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form class="client-form" [formGroup]="form" (ngSubmit)="submit()">
+        <div class="form-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'clients.name' | translate }}</mat-label>
+            <input matInput formControlName="name" />
+            @if (form.controls.name.hasError('required')) {
+              <mat-error>{{ 'clients.name-required' | translate }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'clients.last-name' | translate }}</mat-label>
+            <input matInput formControlName="lastName" />
+            @if (form.controls.lastName.hasError('required')) {
+              <mat-error>{{ 'clients.last-name-required' | translate }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'clients.dni' | translate }}</mat-label>
+            <input matInput formControlName="dni" maxlength="8" />
+            @if (form.controls.dni.hasError('required')) {
+              <mat-error>{{ 'clients.dni-required' | translate }}</mat-error>
+            } @else if (form.controls.dni.hasError('pattern')) {
+              <mat-error>{{ 'clients.dni-invalid' | translate }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'clients.phone' | translate }}</mat-label>
+            <input matInput formControlName="phone" maxlength="9" />
+            @if (form.controls.phone.hasError('required')) {
+              <mat-error>{{ 'clients.phone-required' | translate }}</mat-error>
+            } @else if (form.controls.phone.hasError('pattern')) {
+              <mat-error>{{ 'clients.phone-invalid' | translate }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'clients.email' | translate }}</mat-label>
+            <input matInput type="email" formControlName="email" />
+            @if (form.controls.email.hasError('required')) {
+              <mat-error>{{ 'clients.email-required' | translate }}</mat-error>
+            } @else if (form.controls.email.hasError('email')) {
+              <mat-error>{{ 'clients.email-invalid' | translate }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="address-field">
+            <mat-label>{{ 'clients.address' | translate }}</mat-label>
+            <input matInput formControlName="address" />
+            @if (form.controls.address.hasError('required')) {
+              <mat-error>{{ 'clients.address-required' | translate }}</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        @if (store.error()) {
+          <p class="client-form-error">{{ store.error() }}</p>
+        }
+
+        <div class="form-actions">
+          <button mat-stroked-button type="button" routerLink="/clients">{{ 'clients.cancel' | translate }}</button>
+          <button mat-flat-button class="client-form-submit" type="submit" [disabled]="form.invalid || store.loading()">
+            {{ (isEdit ? 'clients.update' : 'clients.create') | translate }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,0 +1,55 @@
+<header class="guide-header">
+  <div>
+    <h1>Guía de uso</h1>
+    <p>Pasos principales para utilizar Credit Drive de forma ordenada.</p>
+  </div>
+
+  <a mat-stroked-button class="back-help-button" routerLink="/help">
+    <mat-icon>help_outline</mat-icon>
+    Volver a ayuda
+  </a>
+</header>
+
+<section class="guide-intro-card">
+  <mat-card>
+    <mat-card-content>
+      <mat-icon aria-hidden="true">tips_and_updates</mat-icon>
+
+      <div>
+        <h2>Flujo recomendado</h2>
+        <p>
+          Para obtener una simulación consistente, primero registra la información base del cliente
+          y del vehículo. Luego configura las condiciones del crédito, revisa el cronograma y guarda
+          el resultado final.
+        </p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</section>
+
+<section class="guide-steps">
+  @for (step of steps; track step.title) {
+  <article class="guide-step-card">
+      <span class="step-icon">
+        <mat-icon>{{ step.icon }}</mat-icon>
+      </span>
+
+    <div>
+      <h2>{{ step.title }}</h2>
+      <p>{{ step.description }}</p>
+    </div>
+  </article>
+  }
+</section>
+
+<section class="guide-actions">
+  <a mat-flat-button class="primary-action" routerLink="/simulator">
+    <mat-icon>calculate</mat-icon>
+    Ir al simulador
+  </a>
+
+  <a mat-stroked-button class="secondary-action" routerLink="/simulations">
+    <mat-icon>visibility</mat-icon>
+    Ver simulaciones
+  </a>
+</section>

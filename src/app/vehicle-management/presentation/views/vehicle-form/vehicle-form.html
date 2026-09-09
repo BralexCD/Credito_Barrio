@@ -1,0 +1,190 @@
+<div class="vehicle-form-page">
+  <mat-card class="vehicle-form-card">
+    <mat-card-header class="vehicle-form-header">
+      <mat-icon class="vehicle-form-icon" aria-hidden="true">directions_car</mat-icon>
+      <mat-card-title>{{ (isEdit ? 'vehicles.edit-title' : 'vehicles.new-title') | translate }}</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form class="vehicle-form" [formGroup]="form" (ngSubmit)="submit()">
+        <div class="form-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'vehicles.brand' | translate }}</mat-label>
+            <input matInput formControlName="brand" />
+            @if (form.controls.brand.hasError('required')) {
+            <mat-error>{{ 'vehicles.brand-required' | translate }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'vehicles.model' | translate }}</mat-label>
+            <input matInput formControlName="model" />
+            @if (form.controls.model.hasError('required')) {
+            <mat-error>{{ 'vehicles.model-required' | translate }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'vehicles.year' | translate }}</mat-label>
+            <input matInput type="number" formControlName="year" />
+            @if (form.controls.year.hasError('required')) {
+            <mat-error>{{ 'vehicles.year-required' | translate }}</mat-error>
+            } @else if (form.controls.year.hasError('min') || form.controls.year.hasError('max')) {
+            <mat-error>{{ 'vehicles.year-invalid' | translate }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'vehicles.color' | translate }}</mat-label>
+            <input matInput formControlName="color" />
+            @if (form.controls.color.hasError('required')) {
+            <mat-error>{{ 'vehicles.color-required' | translate }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'vehicles.price' | translate }}</mat-label>
+            <input matInput type="number" step="0.01" formControlName="price" />
+            @if (form.controls.price.hasError('required')) {
+            <mat-error>{{ 'vehicles.price-required' | translate }}</mat-error>
+            } @else if (form.controls.price.hasError('min')) {
+            <mat-error>{{ 'vehicles.price-invalid' | translate }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'vehicles.currency' | translate }}</mat-label>
+            <mat-select formControlName="currencyCatalogId">
+              @for (catalog of store.currencyCatalogs(); track catalog.id) {
+              <mat-option [value]="catalog.id">{{ catalog.currency }} ({{ catalog.symbol }})</mat-option>
+              }
+            </mat-select>
+            @if (form.controls.currencyCatalogId.hasError('required')) {
+            <mat-error>{{ 'vehicles.currency-required' | translate }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'vehicles.stock' | translate }}</mat-label>
+            <input matInput type="number" formControlName="stock" />
+            @if (form.controls.stock.hasError('required')) {
+            <mat-error>{{ 'vehicles.stock-required' | translate }}</mat-error>
+            } @else if (form.controls.stock.hasError('min')) {
+            <mat-error>{{ 'vehicles.stock-invalid' | translate }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-checkbox class="status-checkbox" formControlName="status">
+            {{ 'vehicles.status-active' | translate }}
+          </mat-checkbox>
+        </div>
+
+        <section class="images-section">
+          <h2 class="images-title">{{ 'vehicles.images' | translate }}</h2>
+          <p class="images-hint">
+            Puedes subir una imagen desde tu equipo. También puedes pegar una URL manualmente.
+          </p>
+
+          @if (imageUploadError()) {
+          <p class="vehicle-form-error">{{ imageUploadError() }}</p>
+          }
+
+          @if (imageUploading()) {
+          <p class="vehicle-form-uploading">
+            Subiendo imagen a Cloudinary...
+          </p>
+          }
+
+          <div class="images-list" formArrayName="images">
+            @for (group of images.controls; track $index; let i = $index) {
+            <div class="image-row" [formGroupName]="i">
+              <div class="image-preview-box">
+                @if (group.controls.url.value) {
+                <img
+                  class="image-preview"
+                  [src]="group.controls.url.value"
+                  alt="Vista previa del vehículo" />
+                } @else {
+                <div class="image-preview-placeholder">
+                  <mat-icon>image</mat-icon>
+                  <span>Sin imagen</span>
+                </div>
+                }
+              </div>
+
+              <div class="image-fields">
+                <div class="image-upload-line">
+                  <label class="image-upload-button">
+                    <mat-icon>cloud_upload</mat-icon>
+                    <span>Seleccionar imagen</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      (change)="onImageFileSelected(i, $event)"
+                      [disabled]="imageUploading()" />
+                  </label>
+
+                  @if (group.controls.cloudinaryPublicId.value) {
+                  <span class="cloudinary-badge">Cloudinary</span>
+                  }
+                </div>
+
+                <mat-form-field appearance="outline" class="image-url-field">
+                  <mat-label>{{ 'vehicles.image-url' | translate }}</mat-label>
+                  <input matInput formControlName="url" placeholder="https://..." />
+                  @if (group.controls.url.hasError('required')) {
+                  <mat-error>{{ 'vehicles.image-url' | translate }} requerida</mat-error>
+                  }
+                </mat-form-field>
+              </div>
+
+              <button
+                mat-icon-button
+                type="button"
+                class="primary-toggle"
+                [class.active]="group.controls.isPrimary.value"
+                [attr.aria-label]="'vehicles.set-primary' | translate"
+                (click)="setPrimary(i)">
+                <mat-icon>{{ group.controls.isPrimary.value ? 'star' : 'star_border' }}</mat-icon>
+              </button>
+
+              <button
+                mat-icon-button
+                type="button"
+                class="remove-image"
+                [attr.aria-label]="'vehicles.remove-image' | translate"
+                [disabled]="images.length === 1"
+                (click)="removeImage(i)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+            }
+          </div>
+
+          <button mat-stroked-button type="button" class="add-image-button" (click)="addImage()">
+            <mat-icon>add_photo_alternate</mat-icon>
+            {{ 'vehicles.add-image' | translate }}
+          </button>
+        </section>
+
+        @if (store.error()) {
+        <p class="vehicle-form-error">{{ store.error() }}</p>
+        }
+
+        <div class="form-actions">
+          <button mat-stroked-button type="button" routerLink="/vehicles">
+            {{ 'vehicles.cancel' | translate }}
+          </button>
+
+          <button
+            mat-flat-button
+            class="vehicle-form-submit"
+            type="submit"
+            [disabled]="form.invalid || store.loading() || imageUploading()">
+            {{ (isEdit ? 'vehicles.update' : 'vehicles.create') | translate }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

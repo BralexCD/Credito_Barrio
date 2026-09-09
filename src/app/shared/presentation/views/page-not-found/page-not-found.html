@@ -1,0 +1,9 @@
+<div class="not-found">
+  <mat-icon class="not-found-icon">error_outline</mat-icon>
+  <h1>{{ 'page-not-found.title' | translate }}</h1>
+  <p [innerHTML]="'page-not-found.content' | translate: { invalidPath: invalidPath() }"></p>
+  <a mat-flat-button routerLink="/dashboard">
+    <mat-icon>home</mat-icon>
+    {{ 'page-not-found.go-home' | translate }}
+  </a>
+</div>

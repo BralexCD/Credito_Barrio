@@ -1,0 +1,60 @@
+<div class="sign-in-page">
+  <mat-card class="sign-in-card">
+    <mat-card-header class="sign-in-header">
+      <div class="sign-in-title-row">
+        <mat-card-title class="sign-in-title">
+          {{ 'iam.sign-in.title' | translate }}
+        </mat-card-title>
+      </div>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form class="sign-in-form" [formGroup]="form" (ngSubmit)="performSignIn()">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'iam.sign-in.email' | translate }}</mat-label>
+          <mat-icon matPrefix>mail</mat-icon>
+          <input matInput type="email" formControlName="email" autocomplete="email"
+                 placeholder="Ingrese su correo electronico" />
+          @if (form.controls.email.hasError('required')) {
+            <mat-error>{{ 'iam.sign-in.email-required' | translate }}</mat-error>
+          } @else if (form.controls.email.hasError('email')) {
+            <mat-error>{{ 'iam.sign-in.email-invalid' | translate }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'iam.sign-in.password' | translate }}</mat-label>
+          <mat-icon matPrefix>lock</mat-icon>
+          <input matInput [type]="hidePassword() ? 'password' : 'text'" formControlName="password"
+                 autocomplete="current-password" placeholder="Ingrese su contrasena" />
+          <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()"
+                  [attr.aria-label]="(hidePassword() ? 'iam.sign-in.show-password' : 'iam.sign-in.hide-password') | translate">
+            <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (form.controls.password.hasError('required')) {
+            <mat-error>{{ 'iam.sign-in.password-required' | translate }}</mat-error>
+          }
+        </mat-form-field>
+
+        @if (store.signInError()) {
+          <p class="sign-in-error">{{ store.signInError() }}</p>
+        }
+
+        <button mat-flat-button color="primary" type="submit" class="sign-in-submit"
+                [disabled]="form.invalid || store.isLoading()">
+          {{ 'iam.sign-in.submit' | translate }}
+        </button>
+
+        <button class="forgot-password" type="button" routerLink="/iam/forgot-password">
+          ¿Olvidaste tu contraseña?
+        </button>
+
+        <button class="forgot-password" type="button" routerLink="/iam/sign-up">
+          Crear una cuenta nueva
+        </button>
+
+        <div class="secure-access">Acceso Seguro y Encriptado</div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

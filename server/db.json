@@ -1,0 +1,582 @@
+{
+  "roles": [
+    {
+      "id": "1",
+      "name": "ADMIN",
+      "description": "Administrador del sistema. Configura tasas, seguros y catálogo vehicular."
+    },
+    {
+      "id": "2",
+      "name": "ADVISOR",
+      "description": "Asesor comercial. Registra clientes y genera simulaciones de crédito."
+    }
+  ],
+  "users": [
+    {
+      "id": "1",
+      "role_id": "1",
+      "username": "admin_garcia",
+      "password": "admin123",
+      "enabled": true,
+      "name": "Carlos",
+      "last_name": "García",
+      "email": "c.garcia@autocredito.pe",
+      "registration_date": "2025-01-10T08:00:00Z"
+    },
+    {
+      "id": "2",
+      "role_id": "2",
+      "username": "advisor_mendoza",
+      "password": "advisor123",
+      "enabled": true,
+      "name": "Lucía",
+      "last_name": "Mendoza",
+      "email": "l.mendoza@autocredito.pe",
+      "registration_date": "2025-02-05T09:00:00Z"
+    },
+    {
+      "id": "3",
+      "role_id": "2",
+      "username": "advisor_suarez",
+      "password": "advisor456",
+      "enabled": true,
+      "name": "Miguel",
+      "last_name": "Suárez",
+      "email": "m.suarez@autocredito.pe",
+      "registration_date": "2025-03-12T10:30:00Z"
+    }
+  ],
+  "clients": [
+    {
+      "id": "1",
+      "name": "Carlos",
+      "last_name": "Flores Ríos",
+      "dni": "74521893",
+      "phone": "987654321",
+      "email": "carlos.flores@gmail.com",
+      "address": "Av. La Marina 1250, San Miguel, Lima",
+      "registration_date": "2026-04-10T10:00:00Z"
+    },
+    {
+      "id": "2",
+      "name": "María",
+      "last_name": "Quispe Vargas",
+      "dni": "73648520",
+      "phone": "956123784",
+      "email": "maria.quispe@gmail.com",
+      "address": "Jr. Los Álamos 340, Surco, Lima",
+      "registration_date": "2026-04-18T11:30:00Z"
+    },
+    {
+      "id": "3",
+      "name": "Roberto",
+      "last_name": "Silva Paredes",
+      "dni": "71234567",
+      "phone": "942871305",
+      "email": "roberto.silva@hotmail.com",
+      "address": "Calle Las Begonias 720, San Isidro, Lima",
+      "registration_date": "2026-05-02T09:15:00Z"
+    }
+  ],
+  "currency_catalogs": [
+    {
+      "id": "1",
+      "currency": "PEN",
+      "symbol": "S/."
+    },
+    {
+      "id": "2",
+      "currency": "USD",
+      "symbol": "$"
+    }
+  ],
+  "vehicles": [
+    {
+      "id": "1",
+      "brand": "Toyota",
+      "model": "Yaris Cross",
+      "year": 2024,
+      "color": "Blanco Perla",
+      "price": 72900,
+      "currency_catalog_id": "1",
+      "stock": 5,
+      "status": true
+    },
+    {
+      "id": "2",
+      "brand": "Hyundai",
+      "model": "Tucson",
+      "year": 2024,
+      "color": "Gris Titanio",
+      "price": 28500,
+      "currency_catalog_id": "2",
+      "stock": 3,
+      "status": true
+    },
+    {
+      "id": "3",
+      "brand": "Kia",
+      "model": "Sportage",
+      "year": 2024,
+      "color": "Negro Onyx",
+      "price": 98990,
+      "currency_catalog_id": "1",
+      "stock": 4,
+      "status": true
+    },
+    {
+      "id": "4",
+      "brand": "Toyota",
+      "model": "Corolla",
+      "year": 2023,
+      "color": "Plata Metálico",
+      "price": 22000,
+      "currency_catalog_id": "2",
+      "stock": 2,
+      "status": true
+    },
+    {
+      "id": "5",
+      "brand": "Chevrolet",
+      "model": "Spark GT",
+      "year": 2024,
+      "color": "Rojo Flama",
+      "price": 52900,
+      "currency_catalog_id": "1",
+      "stock": 6,
+      "status": true
+    }
+  ],
+  "vehicle_images": [
+    {
+      "id": "1",
+      "vehicle_id": "1",
+      "url": "https://commons.wikimedia.org/wiki/Special:FilePath/2023_Toyota_Yaris_Cross_HEV_Premium_Luxury.jpg",
+      "is_primary": true,
+      "order": 1
+    },
+    {
+      "id": "2",
+      "vehicle_id": "1",
+      "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Toyota_YARIS_CROSS_HYBRID_Z_2WD_(6AA-MXPJ10-BHXGB)_rear.jpg",
+      "is_primary": false,
+      "order": 2
+    },
+    {
+      "id": "3",
+      "vehicle_id": "2",
+      "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Hyundai_Tucson_Inspiration_NX4_PE_Green_Black_Gray_(2).jpg",
+      "is_primary": true,
+      "order": 1
+    },
+    {
+      "id": "4",
+      "vehicle_id": "2",
+      "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Hyundai_Tucson_Inspiration_1.6T_NX4_Amazon_Gray_Metallic_(2).jpg",
+      "is_primary": false,
+      "order": 2
+    },
+    {
+      "id": "5",
+      "vehicle_id": "3",
+      "url": "https://commons.wikimedia.org/wiki/Special:FilePath/2023_Kia_Sportage_(NQ5)_in_White,_front_left.jpg",
+      "is_primary": true,
+      "order": 1
+    },
+    {
+      "id": "6",
+      "vehicle_id": "3",
+      "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Kia_Sportage_Gravity_NQ5_grey_(1).jpg",
+      "is_primary": false,
+      "order": 2
+    },
+    {
+      "id": "7",
+      "vehicle_id": "4",
+      "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Toyota_Corolla_Touring_Sports_Hybrid_(E210)_IMG_2661.jpg",
+      "is_primary": true,
+      "order": 1
+    },
+    {
+      "id": "8",
+      "vehicle_id": "4",
+      "url": "https://commons.wikimedia.org/wiki/Special:FilePath/TOYOTA_COROLLA_SEDAN_(E210)_China_(2).jpg",
+      "is_primary": false,
+      "order": 2
+    },
+    {
+      "id": "9",
+      "vehicle_id": "5",
+      "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Chevrolet_Spark_M400_FL_red_(1).jpg",
+      "is_primary": true,
+      "order": 1
+    },
+    {
+      "id": "10",
+      "vehicle_id": "5",
+      "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Chevrolet_Spark_M400_FL_red_(2).jpg",
+      "is_primary": false,
+      "order": 2
+    }
+  ],
+  "insurance_types": [
+    {
+      "id": "1",
+      "name": "Seguro Vehicular (VSVI)",
+      "description": "Cubre pérdida total, robo y daños al vehículo.",
+      "base_calculo": "SALDO",
+      "tasa_mensual": 0.25,
+      "mandatory": true,
+      "status": true
+    },
+    {
+      "id": "2",
+      "name": "Desgravamen",
+      "description": "Seguro de vida que cancela la deuda ante fallecimiento o invalidez.",
+      "base_calculo": "SALDO",
+      "tasa_mensual": 0.05,
+      "mandatory": true,
+      "status": true
+    }
+  ],
+  "settings": [
+    {
+      "id": "1",
+      "user_id": "1",
+      "default_currency_catalog_id": "1",
+      "default_interest_type": "EFECTIVA",
+      "default_grace_period": "NINGUNA",
+      "default_opportunity_tea": 10,
+      "default_change_usd_pen": 3.75
+    },
+    {
+      "id": "2",
+      "user_id": "2",
+      "default_currency_catalog_id": "1",
+      "default_interest_type": "EFECTIVA",
+      "default_grace_period": "NINGUNA",
+      "default_opportunity_tea": 10,
+      "default_change_usd_pen": 3.75
+    },
+    {
+      "id": "3",
+      "user_id": "3",
+      "default_currency_catalog_id": "2",
+      "default_interest_type": "NOMINAL",
+      "default_grace_period": "PARCIAL",
+      "default_opportunity_tea": 10,
+      "default_change_usd_pen": 3.75
+    }
+  ],
+  "simulations": [
+    {
+      "id": "1",
+      "client_id": "1",
+      "vehicle_id": "1",
+      "user_id": "2",
+      "vehicle_price": 72900,
+      "currency": "PEN",
+      "initial_fee_percentage": 20,
+      "initial_fee_amount": 14580,
+      "financed_amount": 58320,
+      "term_months": 36,
+      "future_value_percentage": 15,
+      "future_value_amount": 10935,
+      "rate_type": "EFECTIVA",
+      "interest_rate": 12,
+      "capitalization": null,
+      "monthly_effective_rate": 0.009489,
+      "grace_type": "NINGUNA",
+      "grace_period": 0,
+      "portes": 15,
+      "tcea": 0.1834,
+      "van": -4250.3,
+      "tir": 0.01289,
+      "disbursement_date": "2026-06-01",
+      "registration_date": "2026-05-28T14:20:00Z"
+    },
+    {
+      "id": "2",
+      "client_id": "2",
+      "vehicle_id": "4",
+      "user_id": "3",
+      "vehicle_price": 22000,
+      "currency": "USD",
+      "initial_fee_percentage": 25,
+      "initial_fee_amount": 5500,
+      "financed_amount": 16500,
+      "term_months": 48,
+      "future_value_percentage": 0,
+      "future_value_amount": 0,
+      "rate_type": "NOMINAL",
+      "interest_rate": 9,
+      "capitalization": "MENSUAL",
+      "monthly_effective_rate": 0.0075,
+      "grace_type": "PARCIAL",
+      "grace_period": 2,
+      "portes": 5,
+      "tcea": 0.0951,
+      "van": -580.45,
+      "tir": 0.007521,
+      "disbursement_date": "2026-06-15",
+      "registration_date": "2026-05-30T10:45:00Z"
+    }
+  ],
+  "insurance_simulations": [
+    {
+      "id": "1",
+      "simulation_id": "1",
+      "tipo_seguro_id": "1",
+      "tasa_mensual": 0.25,
+      "base_calculo": "SALDO",
+      "applies": true
+    },
+    {
+      "id": "2",
+      "simulation_id": "1",
+      "tipo_seguro_id": "2",
+      "tasa_mensual": 0.05,
+      "base_calculo": "SALDO",
+      "applies": true
+    },
+    {
+      "id": "3",
+      "simulation_id": "2",
+      "tipo_seguro_id": "1",
+      "tasa_mensual": 0.25,
+      "base_calculo": "SALDO",
+      "applies": false
+    },
+    {
+      "id": "4",
+      "simulation_id": "2",
+      "tipo_seguro_id": "2",
+      "tasa_mensual": 0.05,
+      "base_calculo": "SALDO",
+      "applies": false
+    }
+  ],
+  "additional_expenses": [
+    {
+      "id": "1",
+      "simulation_id": "1",
+      "concept": "Instalación GPS",
+      "type": "UNICO",
+      "amount": 350,
+      "installment_start": 1,
+      "installment_end": 1,
+      "description": "Dispositivo GPS obligatorio para el vehículo financiado."
+    },
+    {
+      "id": "2",
+      "simulation_id": "1",
+      "concept": "Mantenimiento GPS",
+      "type": "PERIODICO",
+      "amount": 35,
+      "installment_start": 1,
+      "installment_end": 36,
+      "description": "Mensualidad del servicio de monitoreo GPS."
+    },
+    {
+      "id": "3",
+      "simulation_id": "1",
+      "concept": "Peritaje vehicular",
+      "type": "UNICO",
+      "amount": 120,
+      "installment_start": 1,
+      "installment_end": 1,
+      "description": "Inspección técnica del vehículo al momento del desembolso."
+    },
+    {
+      "id": "4",
+      "simulation_id": "2",
+      "concept": "Vehicle appraisal",
+      "type": "UNICO",
+      "amount": 45,
+      "installment_start": 1,
+      "installment_end": 1,
+      "description": "Technical inspection at disbursement."
+    }
+  ],
+  "payment_schedule": [
+    {
+      "id": "1",
+      "simulation_id": "1",
+      "installment_number": 1,
+      "payment_date": "2026-07-01",
+      "period_type": "NORMAL",
+      "initial_balance": 58320,
+      "interest": 553.4,
+      "amortization": 1110.5,
+      "total_insurance": 174.96,
+      "portes": 15,
+      "other_expenses": 505,
+      "total_payment": 2358.86,
+      "final_balance": 57209.5,
+      "cash_flow": -2358.86
+    },
+    {
+      "id": "2",
+      "simulation_id": "1",
+      "installment_number": 2,
+      "payment_date": "2026-08-01",
+      "period_type": "NORMAL",
+      "initial_balance": 57209.5,
+      "interest": 542.85,
+      "amortization": 1121.05,
+      "total_insurance": 171.63,
+      "portes": 15,
+      "other_expenses": 35,
+      "total_payment": 1885.53,
+      "final_balance": 56088.45,
+      "cash_flow": -1885.53
+    },
+    {
+      "id": "3",
+      "simulation_id": "1",
+      "installment_number": 3,
+      "payment_date": "2026-09-01",
+      "period_type": "NORMAL",
+      "initial_balance": 56088.45,
+      "interest": 532.24,
+      "amortization": 1131.66,
+      "total_insurance": 168.27,
+      "portes": 15,
+      "other_expenses": 35,
+      "total_payment": 1882.17,
+      "final_balance": 54956.79,
+      "cash_flow": -1882.17
+    },
+    {
+      "id": "4",
+      "simulation_id": "1",
+      "installment_number": 4,
+      "payment_date": "2026-10-01",
+      "period_type": "NORMAL",
+      "initial_balance": 54956.79,
+      "interest": 521.54,
+      "amortization": 1142.36,
+      "total_insurance": 164.87,
+      "portes": 15,
+      "other_expenses": 35,
+      "total_payment": 1878.77,
+      "final_balance": 53814.43,
+      "cash_flow": -1878.77
+    },
+    {
+      "id": "5",
+      "simulation_id": "1",
+      "installment_number": 36,
+      "payment_date": "2029-06-01",
+      "period_type": "NORMAL",
+      "initial_balance": 12498.2,
+      "interest": 118.59,
+      "amortization": 1545.31,
+      "total_insurance": 37.49,
+      "portes": 15,
+      "other_expenses": 35,
+      "total_payment": 12741.39,
+      "final_balance": 0,
+      "cash_flow": -12741.39
+    },
+    {
+      "id": "6",
+      "simulation_id": "2",
+      "installment_number": 1,
+      "payment_date": "2026-07-15",
+      "period_type": "GRACIA_PARCIAL",
+      "initial_balance": 16500,
+      "interest": 123.75,
+      "amortization": 0,
+      "total_insurance": 0,
+      "portes": 5,
+      "other_expenses": 45,
+      "total_payment": 173.75,
+      "final_balance": 16500,
+      "cash_flow": -173.75
+    },
+    {
+      "id": "7",
+      "simulation_id": "2",
+      "installment_number": 2,
+      "payment_date": "2026-08-15",
+      "period_type": "GRACIA_PARCIAL",
+      "initial_balance": 16500,
+      "interest": 123.75,
+      "amortization": 0,
+      "total_insurance": 0,
+      "portes": 5,
+      "other_expenses": 0,
+      "total_payment": 128.75,
+      "final_balance": 16500,
+      "cash_flow": -128.75
+    },
+    {
+      "id": "8",
+      "simulation_id": "2",
+      "installment_number": 3,
+      "payment_date": "2026-09-15",
+      "period_type": "NORMAL",
+      "initial_balance": 16500,
+      "interest": 123.75,
+      "amortization": 301.67,
+      "total_insurance": 0,
+      "portes": 5,
+      "other_expenses": 0,
+      "total_payment": 430.42,
+      "final_balance": 16198.33,
+      "cash_flow": -430.42
+    },
+    {
+      "id": "9",
+      "simulation_id": "2",
+      "installment_number": 4,
+      "payment_date": "2026-10-15",
+      "period_type": "NORMAL",
+      "initial_balance": 16198.33,
+      "interest": 121.49,
+      "amortization": 303.93,
+      "total_insurance": 0,
+      "portes": 5,
+      "other_expenses": 0,
+      "total_payment": 430.42,
+      "final_balance": 15894.4,
+      "cash_flow": -430.42
+    },
+    {
+      "id": "10",
+      "simulation_id": "2",
+      "installment_number": 5,
+      "payment_date": "2026-11-15",
+      "period_type": "NORMAL",
+      "initial_balance": 15894.4,
+      "interest": 119.21,
+      "amortization": 306.21,
+      "total_insurance": 0,
+      "portes": 5,
+      "other_expenses": 0,
+      "total_payment": 430.42,
+      "final_balance": 15588.19,
+      "cash_flow": -430.42
+    }
+  ],
+  "reports": [
+    {
+      "id": "1",
+      "user_id": "2",
+      "simulation_id": "1",
+      "report_type": "COMPLETO",
+      "generated_at": "2026-05-28T14:25:00Z",
+      "description": "Simulación Compra Inteligente - Toyota Yaris Cross - 36 meses PEN"
+    },
+    {
+      "id": "2",
+      "user_id": "3",
+      "simulation_id": "2",
+      "report_type": "COMPLETO",
+      "generated_at": "2026-05-30T10:50:00Z",
+      "description": "Simulación con gracia parcial - Toyota Corolla - 48 meses USD"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}

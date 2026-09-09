@@ -1,0 +1,107 @@
+<div class="customer-purchases-page">
+  <div class="page-top-bar">
+    <div>
+      <h1 class="page-title">Mis Compras a Crédito</h1>
+      <p class="page-subtitle">Historial de consumos realizados, capitalización de días de gracia y cronogramas de cuotas acordados.</p>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Fecha / Hora</th>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Modalidad</th>
+            <th>Capital Original</th>
+            <th>Días de Gracia</th>
+            <th>Capitalizado</th>
+            <th>Cronograma</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of myPurchases(); track p.id) {
+            <tr>
+              <td>{{ p.purchasedAt | date:'yyyy-MM-dd HH:mm' }}</td>
+              <td><strong>{{ p.productName }}</strong></td>
+              <td>{{ p.quantity }}</td>
+              <td>
+                <span class="mode-pill" [class.installments]="p.mode === 'INSTALLMENTS'">
+                  {{ p.mode === 'INSTALLMENTS' ? p.months + ' cuotas' : 'Fin de mes' }}
+                </span>
+              </td>
+              <td class="num-cell">{{ p.principal | number:'1.2-2' }}</td>
+              <td>{{ p.graceDays }} días</td>
+              <td class="num-cell highlight-num">{{ p.capitalizedPrincipal | number:'1.2-2' }}</td>
+              <td>
+                <button class="btn btn-sm btn-secondary" (click)="viewSchedule(p)">
+                  Ver Cuotas ({{ p.schedule.length }})
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8" class="empty-cell">
+                No tienes compras a crédito registradas aún.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- MODAL DE CRONOGRAMA -->
+  @if (viewingPurchase(); as vp) {
+    <div class="modal-backdrop" (click)="closeSchedule()">
+      <div class="modal-card" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+        <div class="modal-header">
+          <h2 class="modal-title">Cronograma de Cuotas: {{ vp.productName }}</h2>
+          <button class="close-btn" (click)="closeSchedule()" aria-label="Cerrar modal">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+
+        <div class="modal-details-bar">
+          <div><span>Fecha compra:</span> <strong>{{ vp.purchasedAt }}</strong></div>
+          <div><span>Modalidad:</span> <strong>{{ vp.mode === 'INSTALLMENTS' ? vp.months + ' cuotas' : 'Fin de mes' }}</strong></div>
+          <div><span>Días de Gracia:</span> <strong>{{ vp.graceDays }} días</strong></div>
+          <div><span>Capital Financiado:</span> <strong>{{ vp.capitalizedPrincipal | number:'1.2-2' }}</strong></div>
+        </div>
+
+        <div class="table-responsive" style="margin-top: 16px;">
+          <table class="schedule-table">
+            <thead>
+              <tr>
+                <th>N°</th>
+                <th>Fecha Vencimiento</th>
+                <th>Capital</th>
+                <th>Interés</th>
+                <th>Cuota Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of vp.schedule; track item.number) {
+                <tr>
+                  <td>Cuota {{ item.number }}</td>
+                  <td>{{ item.dueDate }}</td>
+                  <td>{{ item.capital | number:'1.2-2' }}</td>
+                  <td>{{ item.interest | number:'1.2-2' }}</td>
+                  <td><strong>{{ item.total | number:'1.2-2' }}</strong></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeSchedule()">
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

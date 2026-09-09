@@ -1,0 +1,72 @@
+﻿<aside class="sidebar-shell">
+  <button
+    mat-icon-button
+    type="button"
+    class="sidebar-menu-button"
+    [attr.aria-label]="(collapsed ? 'sidebar.expand-menu' : 'sidebar.collapse-menu') | translate"
+    [attr.aria-expanded]="!collapsed"
+    (click)="menuToggle.emit()"
+  >
+    <mat-icon class="sidebar-menu-icon" aria-hidden="true">{{ collapsed ? 'menu' : 'menu_open' }}</mat-icon>
+  </button>
+  <div class="sidebar-content">
+    <div class="sidebar-brand">
+      <img class="sidebar-logo" src="CreditDriveProfilePic.png" alt="CreditDrive" />
+      <div>
+        <strong class="sidebar-brand-title">{{ 'app.title' | translate }}</strong>
+        <span class="sidebar-brand-subtitle">{{ 'app.subtitle' | translate }}</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav" aria-label="principal">
+      @for (option of options(); track option.link) {
+        <a
+          mat-button
+          class="sidebar-link"
+          [routerLink]="option.link"
+          routerLinkActive="active-link"
+          ariaCurrentWhenActive="page"
+          [attr.aria-label]="option.label | translate"
+          (click)="navigate.emit()"
+        >
+          <mat-icon aria-hidden="true">{{ option.icon }}</mat-icon>
+          <span class="sidebar-link-label">{{ option.label | translate }}</span>
+        </a>
+      }
+    </nav>
+  </div>
+
+  <div class="sidebar-bottom">
+    <div class="sidebar-user">
+      <img class="sidebar-user-avatar" src="CreditDriveProfilePic.png" alt="" />
+      <div class="sidebar-user-info">
+        <strong>{{ iamStore.currentUser()?.fullName }}</strong>
+        <span>{{ iamStore.currentUser()?.roleName }}</span>
+      </div>
+    </div>
+
+    <a
+      mat-button
+      class="sidebar-link sidebar-link-muted"
+      routerLink="/settings"
+      routerLinkActive="active-link"
+      ariaCurrentWhenActive="page"
+      [attr.aria-label]="'sidebar.settings' | translate"
+      (click)="navigate.emit()"
+    >
+      <mat-icon aria-hidden="true">settings</mat-icon>
+      <span class="sidebar-link-label">{{ 'sidebar.settings' | translate }}</span>
+    </a>
+
+    <button
+      mat-button
+      type="button"
+      class="sidebar-link sidebar-link-muted"
+      [attr.aria-label]="'sidebar.logout' | translate"
+      (click)="performSignOut()"
+    >
+      <mat-icon aria-hidden="true">logout</mat-icon>
+      <span class="sidebar-link-label">{{ 'sidebar.logout' | translate }}</span>
+    </button>
+  </div>
+</aside>

@@ -1,0 +1,47 @@
+<div class="payments-page">
+  <div class="page-top-bar">
+    <div>
+      <h1 class="page-title">Historial de Cobranzas y Pagos</h1>
+      <p class="page-subtitle">Registro cronológico de pagos exactos aplicados con imputación estricta (Mora &rarr; Interés &rarr; Capital).</p>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID de Pago</th>
+            <th>Nro Estado Cierre</th>
+            <th>Cliente</th>
+            <th>Fecha de Pago</th>
+            <th>Monto Total</th>
+            <th>Imputado a Mora</th>
+            <th>Imputado a Interés</th>
+            <th>Imputado a Capital</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (pay of store.payments(); track pay.id) {
+            <tr>
+              <td><span class="code-id">#{{ pay.id.substring(0, 8) }}</span></td>
+              <td><span class="code-id">#{{ pay.statementId.substring(0, 8) }}</span></td>
+              <td><strong>{{ getClientName(pay.clientId) }}</strong></td>
+              <td>{{ pay.paidAt | date:'yyyy-MM-dd' }}</td>
+              <td class="num-cell total-cell">{{ pay.amount | number:'1.2-2' }}</td>
+              <td class="num-cell warn-cell">{{ pay.lateInterest | number:'1.2-2' }}</td>
+              <td class="num-cell">{{ pay.interest | number:'1.2-2' }}</td>
+              <td class="num-cell success-cell">{{ pay.capital | number:'1.2-2' }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8" class="empty-cell">
+                Aún no se han registrado cancelaciones de estados de cuenta.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

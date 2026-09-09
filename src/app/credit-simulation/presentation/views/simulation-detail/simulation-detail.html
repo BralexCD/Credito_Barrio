@@ -1,0 +1,301 @@
+@if (simulation(); as s) {
+<header class="simulation-detail-header">
+  <div>
+    <h1>{{ 'simulation.detail-title' | translate }}</h1>
+    <p>{{ 'simulation.detail-subtitle' | translate }}</p>
+  </div>
+
+  <button mat-stroked-button class="export-pdf-button" type="button" (click)="exportPdf()">
+    <mat-icon>download</mat-icon>
+    {{ 'simulation.export-pdf' | translate }}
+  </button>
+</header>
+
+<section class="kpi-grid">
+  <article class="kpi-card primary-kpi">
+    <span>{{ 'simulation.tcea' | translate }}</span>
+    <strong>{{ s.tcea | percent: '1.2-4' }}</strong>
+    <small>{{ 'simulation.annual-effective-cost' | translate }}</small>
+  </article>
+
+  <article class="kpi-card">
+    <span>{{ 'simulation.van' | translate }}</span>
+    <strong>{{ s.van | number: '1.2-2' }}</strong>
+    <small>{{ vanLabelKey(s.van) | translate }}</small>
+  </article>
+
+  <article class="kpi-card">
+    <span>{{ 'simulation.tir' | translate }}</span>
+    <strong>{{ s.tir | percent: '1.2-4' }}</strong>
+    <small>{{ 'simulation.internal-return' | translate }}</small>
+  </article>
+
+  <article class="kpi-card">
+    <span>Tasa de descuento</span>
+    <strong>{{ discountRatePeriod() | percent: '1.2-4' }}</strong>
+    <small>
+      COK {{ discountRateAnnual() | percent: '1.2-4' }} convertido a {{ s.paymentFrequencyDays }} días
+    </small>
+  </article>
+
+  <article class="kpi-card">
+    <span>{{ 'simulation.interest-rate' | translate }}</span>
+    <strong>{{ s.interestRate | number: '1.2-2' }}%</strong>
+    <small>{{ s.rateType }}</small>
+  </article>
+
+  <article class="kpi-card">
+    <span>Préstamo</span>
+    <strong>{{ s.loanAmount | number: '1.2-2' }}</strong>
+    <small>{{ s.currency }}</small>
+  </article>
+
+  <article class="kpi-card">
+    <span>Cuota regular</span>
+    <strong>{{ s.regularQuota | number: '1.2-2' }}</strong>
+    <small>{{ s.termMonths }} cuotas regulares</small>
+  </article>
+</section>
+
+<section class="kpi-grid secondary-kpi-grid">
+  <article class="kpi-card">
+    <span>Cuotón final</span>
+    <strong>{{ s.finalQuotaAmount | number: '1.2-2' }}</strong>
+    <small>{{ s.finalQuotaPercentage | number: '1.2-2' }}% del vehículo</small>
+  </article>
+
+  <article class="kpi-card">
+    <span>VP del cuotón</span>
+    <strong>{{ s.presentValueFinalQuota | number: '1.2-2' }}</strong>
+    <small>Descontado al periodo 0</small>
+  </article>
+
+  <article class="kpi-card">
+    <span>Saldo regular</span>
+    <strong>{{ s.regularFinancedBalance | number: '1.2-2' }}</strong>
+    <small>Base para cuotas regulares</small>
+  </article>
+
+  <article class="kpi-card">
+    <span>Gracia total</span>
+    <strong>{{ s.totalGracePeriods }}</strong>
+    <small>Periodos</small>
+  </article>
+
+  <article class="kpi-card">
+    <span>Gracia parcial</span>
+    <strong>{{ s.partialGracePeriods }}</strong>
+    <small>Periodos</small>
+  </article>
+
+  <article class="kpi-card">
+    <span>Fecha desembolso</span>
+    <strong>{{ s.disbursementDate }}</strong>
+    <small>{{ 'simulation.scheduled' | translate }}</small>
+  </article>
+</section>
+
+<section class="detail-main-grid vehicle-only-grid">
+
+  <aside class="vehicle-card centered-vehicle-card">
+    <div class="vehicle-hero">
+      @if (vehicleImageUrl(s.vehicleId); as imageUrl) {
+      <img [src]="imageUrl" [alt]="vehicleName(s.vehicleId)" />
+      } @else {
+      <mat-icon aria-hidden="true">directions_car</mat-icon>
+      }
+    </div>
+
+    <div class="vehicle-content">
+      <h2>Detalle del Vehículo</h2>
+      <p>{{ vehicleName(s.vehicleId) }}</p>
+
+      <dl>
+        <div>
+          <dt>Precio del vehículo</dt>
+          <dd>{{ s.vehiclePrice | number: '1.2-2' }} {{ s.currency }}</dd>
+        </div>
+
+        <div>
+          <dt>Tipo de cambio USD/PEN</dt>
+          <dd>{{ s.exchangeRateUsdPen | number: '1.4-4' }}</dd>
+        </div>
+
+        <div>
+          <dt>Moneda de simulación</dt>
+          <dd>{{ s.currency }}</dd>
+        </div>
+
+        <div>
+          <dt>Cuota inicial</dt>
+          <dd>{{ s.initialFeeAmount | number: '1.2-2' }}</dd>
+        </div>
+
+        <div>
+          <dt>Gastos iniciales financiados</dt>
+          <dd>{{ s.initialCostsFinanced | number: '1.2-2' }}</dd>
+        </div>
+
+        <div>
+          <dt>Total intereses</dt>
+          <dd>{{ totalInterest() | number: '1.2-2' }}</dd>
+        </div>
+
+        <div>
+          <dt>Seguro total</dt>
+          <dd>{{ totalInsurance() | number: '1.2-2' }}</dd>
+        </div>
+
+        <div>
+          <dt>Portes totales</dt>
+          <dd>{{ totalPortes() | number: '1.2-2' }}</dd>
+        </div>
+
+        <div class="vehicle-total-row">
+          <dt>Pago total</dt>
+          <dd>{{ totalPayments() | number: '1.2-2' }}</dd>
+        </div>
+      </dl>
+    </div>
+  </aside>
+
+</section>
+
+<section class="kpi-grid secondary-kpi-grid">
+  <article class="kpi-card">
+    <span>Interés regular</span>
+    <strong>{{ totalRegularInterest() | number: '1.2-2' }}</strong>
+    <small>Sobre saldo regular</small>
+  </article>
+
+  <article class="kpi-card">
+    <span>Interés cuotón</span>
+    <strong>{{ totalFinalQuotaInterest() | number: '1.2-2' }}</strong>
+    <small>Capitalización del cuotón</small>
+  </article>
+
+  <article class="kpi-card">
+    <span>Seguro riesgo</span>
+    <strong>{{ totalRiskInsurance() | number: '1.2-2' }}</strong>
+    <small>Vehicular</small>
+  </article>
+
+  <article class="kpi-card">
+    <span>GPS</span>
+    <strong>{{ totalGps() | number: '1.2-2' }}</strong>
+    <small>Costo periódico</small>
+  </article>
+
+  <article class="kpi-card">
+    <span>Gastos adm.</span>
+    <strong>{{ totalAdministrativeExpenses() | number: '1.2-2' }}</strong>
+    <small>Costo periódico</small>
+  </article>
+
+  <article class="kpi-card">
+    <span>Otros gastos</span>
+    <strong>{{ totalOtherExpenses() | number: '1.2-2' }}</strong>
+    <small>Adicionales</small>
+  </article>
+</section>
+
+<section class="schedule-card">
+  <div class="section-heading schedule-heading">
+    <div>
+      <h2>{{ 'simulation.schedule-title' | translate }}</h2>
+      <p>{{ 'simulation.client-column' | translate }}: {{ clientName(s.clientId) }}</p>
+    </div>
+
+    <div class="schedule-actions">
+      <mat-icon aria-hidden="true">print</mat-icon>
+      <mat-icon aria-hidden="true">filter_list</mat-icon>
+    </div>
+  </div>
+
+  <div class="schedule-table-wrapper">
+    <table class="schedule-table excel-schedule-table">
+      <thead>
+      <tr>
+        <th>N°</th>
+        <th>{{ 'simulation.schedule-date' | translate }}</th>
+        <th>PG</th>
+        <th>Tipo flujo</th>
+
+        <th>SICF</th>
+        <th>ICF</th>
+        <th>ACF</th>
+        <th>Seg. Des. CF</th>
+        <th>SFCF</th>
+
+        <th>SI</th>
+        <th>I</th>
+        <th>Cuota</th>
+        <th>A</th>
+        <th>Seg. Des.</th>
+        <th>SF</th>
+
+        <th>Seg. Riesgo</th>
+        <th>GPS</th>
+        <th>Portes</th>
+        <th>Gastos adm.</th>
+        <th>Otros gastos</th>
+        <th>Cuota final</th>
+        <th>Pago total</th>
+        <th>Flujo caja</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      @for (entry of schedule(); track entry.id) {
+      <tr [class.balloon-row]="entry.isBalloonPayment">
+        <td>{{ entry.installmentNumber }}</td>
+        <td>{{ entry.paymentDate }}</td>
+        <td class="pg-cell">{{ pgLabel(entry.periodType, entry.cashFlowType) }}</td>
+        <td>{{ cashFlowTypeLabel(entry.cashFlowType) }}</td>
+
+        <td>{{ entry.initialFinalQuotaBalance | number: '1.2-2' }}</td>
+        <td class="interest-cell">{{ entry.finalQuotaInterest | number: '1.2-2' }}</td>
+        <td>{{ entry.finalQuotaAmortization | number: '1.2-2' }}</td>
+        <td>{{ entry.finalQuotaDesgravamen | number: '1.2-2' }}</td>
+        <td>{{ entry.finalFinalQuotaBalance | number: '1.2-2' }}</td>
+
+        <td>{{ entry.initialRegularBalance | number: '1.2-2' }}</td>
+        <td class="interest-cell">{{ entry.regularInterest | number: '1.2-2' }}</td>
+        <td>{{ entry.regularQuota | number: '1.2-2' }}</td>
+        <td>{{ entry.regularAmortization | number: '1.2-2' }}</td>
+        <td>{{ entry.regularDesgravamen | number: '1.2-2' }}</td>
+        <td>{{ entry.finalRegularBalance | number: '1.2-2' }}</td>
+
+        <td>{{ entry.riskInsurance | number: '1.2-2' }}</td>
+        <td>{{ entry.gps | number: '1.2-2' }}</td>
+        <td>{{ entry.portes | number: '1.2-2' }}</td>
+        <td>{{ entry.administrativeExpenses | number: '1.2-2' }}</td>
+        <td>{{ entry.otherExpenses | number: '1.2-2' }}</td>
+        <td>{{ entry.balloonPayment | number: '1.2-2' }}</td>
+        <td class="payment-cell">{{ entry.totalPayment | number: '1.2-2' }}</td>
+        <td>{{ entry.cashFlow | number: '1.2-2' }}</td>
+      </tr>
+      }
+      </tbody>
+    </table>
+  </div>
+
+</section>
+
+<footer class="detail-actions">
+  <button mat-stroked-button routerLink="/simulations">
+    {{ 'simulation.back' | translate }}
+  </button>
+
+  <div class="detail-header-actions">
+
+    <button mat-flat-button class="export-excel-button" type="button" (click)="exportScheduleExcel()">
+      <mat-icon>table_chart</mat-icon>
+      Descargar Excel
+    </button>
+  </div>
+
+</footer>
+} @else {
+<p>{{ 'simulation.not-found' | translate }}</p>
+}

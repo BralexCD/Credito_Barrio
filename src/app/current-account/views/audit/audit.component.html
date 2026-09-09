@@ -1,0 +1,59 @@
+<div class="audit-page">
+  <div class="page-top-bar">
+    <div>
+      <h1 class="page-title">Registro de Auditoría del Sistema</h1>
+      <p class="page-subtitle">Trazabilidad completa de operaciones mutantes en base de datos sin almacenamiento de secretos.</p>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-toolbar">
+      <div class="search-wrap">
+        <span class="material-icons search-icon">search</span>
+        <input
+          type="text"
+          [value]="searchTerm()"
+          (input)="searchTerm.set($any($event.target).value)"
+          placeholder="Buscar por acción, usuario o ID..."
+          class="search-input"
+        />
+      </div>
+      <div class="count-tag">
+        {{ filteredAudit().length }} eventos registrados
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Marca Temporal (at)</th>
+            <th>Acción Registrada</th>
+            <th>ID del Actor</th>
+            <th>ID de Entidad Afectada</th>
+            <th>ID Registro</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (a of filteredAudit(); track a.id) {
+            <tr>
+              <td>{{ a.at | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+              <td>
+                <span class="action-badge">{{ a.action }}</span>
+              </td>
+              <td><code>{{ a.actorId }}</code></td>
+              <td><code>{{ a.entityId }}</code></td>
+              <td><span class="code-id">#{{ a.id.substring(0, 8) }}</span></td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" class="empty-cell">
+                No se encontraron registros de auditoría que coincidan con la búsqueda.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

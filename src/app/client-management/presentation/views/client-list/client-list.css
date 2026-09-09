@@ -1,0 +1,137 @@
+:host {
+  display: block;
+}
+
+.client-list-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.client-list-header h1 {
+  margin: 0;
+  color: var(--credit-primary);
+  font-size: 30px;
+  font-weight: 800;
+}
+
+.client-list-header p {
+  margin: 8px 0 0;
+  color: var(--credit-muted);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.new-client-button {
+  height: 48px;
+  border-radius: 7px;
+  background: var(--credit-primary) !important;
+  color: #ffffff !important;
+  font-weight: 800;
+}
+
+.client-list-error {
+  color: var(--mat-sys-error, #b3261e);
+  font-weight: 600;
+}
+
+.client-table-wrapper {
+  border-radius: 8px;
+  background: var(--credit-surface);
+  border: 1px solid #eadff1;
+  box-shadow: 0 8px 18px rgba(60, 39, 96, 0.06);
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  min-width: 760px;
+  background: #ffffff;
+}
+
+.mat-mdc-header-row {
+  height: 38px;
+  background: #f6eff8;
+}
+
+.mat-mdc-row {
+  height: 48px;
+}
+
+.mat-mdc-row:nth-child(even) {
+  background: #f7f4fb;
+}
+
+.mat-mdc-header-cell {
+  border-bottom: 1px solid #dfd2ea;
+  color: #6f687a;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.mat-mdc-cell {
+  border-bottom: 1px solid #eee8f3;
+  color: #2f2938;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.mat-column-name {
+  font-weight: 800;
+}
+
+.mat-column-email,
+.mat-column-address {
+  max-width: 220px;
+}
+
+.mat-column-actions {
+  width: 120px;
+  text-align: center;
+}
+
+.client-actions {
+  white-space: nowrap;
+}
+
+.action-button {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+}
+
+.action-button mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.edit-button {
+  color: var(--credit-primary);
+}
+
+.delete-button {
+  color: #dc3d4a;
+}
+
+mat-paginator {
+  border-top: 1px solid #eee8f3;
+  background: #ffffff;
+  color: var(--credit-muted);
+  font-size: 12px;
+}
+
+@media (max-width: 720px) {
+  .client-list-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .new-client-button {
+    width: 100%;
+  }
+}

@@ -1,0 +1,167 @@
+:host {
+  display: block;
+}
+
+.help-header {
+  margin-bottom: 22px;
+}
+
+.help-header h1 {
+  margin: 0;
+  color: #211b2b;
+  font-size: 31px;
+  font-weight: 900;
+}
+
+.help-header p {
+  margin: 6px 0 0;
+  color: #6f687a;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.help-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  align-items: start;
+}
+
+.help-card {
+  border: 1px solid #efe7f4;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 8px 18px rgba(60, 39, 96, 0.07);
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.help-card:hover {
+  transform: translateY(-2px);
+  border-color: #d9c8ef;
+  box-shadow: 0 12px 24px rgba(60, 39, 96, 0.1);
+}
+
+.help-card.open {
+  border-color: var(--credit-primary);
+}
+
+.help-card mat-card-content {
+  padding: 22px;
+}
+
+.help-card-header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: start;
+}
+
+.help-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: #f4eef8;
+  color: var(--credit-primary);
+}
+
+.help-icon mat-icon {
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+}
+
+.help-card h2 {
+  margin: 0;
+  color: #211b2b;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.help-card p {
+  margin: 6px 0 0;
+  color: #6f687a;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.expand-icon {
+  color: var(--credit-primary);
+}
+
+.help-card-body {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid #f0eaf5;
+  cursor: default;
+}
+
+.faq-item {
+  padding: 14px 0;
+  border-bottom: 1px solid #f0eaf5;
+}
+
+.faq-item:first-child {
+  padding-top: 0;
+}
+
+.faq-item:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.faq-item h3 {
+  margin: 0;
+  color: #2f2938;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.faq-item p {
+  margin-top: 5px;
+  font-size: 12px;
+}
+
+.contact-body,
+.guide-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.whatsapp-button,
+.guide-button {
+  align-self: flex-start;
+  height: 44px;
+  border-radius: 8px;
+  font-weight: 900;
+}
+
+.whatsapp-button {
+  background: #2bc35a !important;
+  color: #ffffff !important;
+}
+
+.guide-button {
+  background: var(--credit-primary) !important;
+  color: #ffffff !important;
+}
+
+.contact-body small {
+  color: #7d738a;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+@media (max-width: 1180px) {
+  .help-grid {
+    grid-template-columns: 1fr;
+  }
+}

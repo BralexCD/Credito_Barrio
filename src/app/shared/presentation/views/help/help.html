@@ -1,0 +1,132 @@
+<header class="help-header">
+  <div>
+    <h1>Centro de ayuda</h1>
+    <p>Encuentra respuestas rápidas, contacto directo y una guía básica para usar la aplicación.</p>
+  </div>
+</header>
+
+<section class="help-grid">
+  <mat-card
+    class="help-card"
+    [class.open]="isOpen('faq')"
+    role="button"
+    tabindex="0"
+    (click)="toggleCard('faq')"
+    (keydown.enter)="toggleCard('faq')">
+
+    <mat-card-content>
+      <div class="help-card-header">
+        <span class="help-icon">
+          <mat-icon>quiz</mat-icon>
+        </span>
+
+        <div>
+          <h2>Preguntas frecuentes</h2>
+          <p>Resuelve dudas comunes sobre simulaciones, tasas y cronogramas.</p>
+        </div>
+
+        <mat-icon class="expand-icon">
+          {{ isOpen('faq') ? 'expand_less' : 'expand_more' }}
+        </mat-icon>
+      </div>
+
+      @if (isOpen('faq')) {
+      <div class="help-card-body" (click)="$event.stopPropagation()">
+        @for (item of faqItems; track item.question) {
+        <article class="faq-item">
+          <h3>{{ item.question }}</h3>
+          <p>{{ item.answer }}</p>
+        </article>
+        }
+      </div>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card
+    class="help-card"
+    [class.open]="isOpen('contact')"
+    role="button"
+    tabindex="0"
+    (click)="toggleCard('contact')"
+    (keydown.enter)="toggleCard('contact')">
+
+    <mat-card-content>
+      <div class="help-card-header">
+        <span class="help-icon">
+          <mat-icon>support_agent</mat-icon>
+        </span>
+
+        <div>
+          <h2>Contáctanos</h2>
+          <p>Comunícate directamente con soporte mediante WhatsApp.</p>
+        </div>
+
+        <mat-icon class="expand-icon">
+          {{ isOpen('contact') ? 'expand_less' : 'expand_more' }}
+        </mat-icon>
+      </div>
+
+      @if (isOpen('contact')) {
+      <div class="help-card-body contact-body" (click)="$event.stopPropagation()">
+        <p>
+          Si necesitas ayuda con el registro de clientes, vehículos, simulaciones o exportación
+          de cronogramas, puedes escribirnos directamente.
+        </p>
+
+        <a
+          mat-flat-button
+          class="whatsapp-button"
+          [href]="whatsappUrl"
+          target="_blank"
+          rel="noopener noreferrer">
+          <mat-icon>chat</mat-icon>
+          Escribir por WhatsApp
+        </a>
+
+        <small>Horario referencial de atención: lunes a viernes de 9:00 a.m. a 6:00 p.m.</small>
+      </div>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card
+    class="help-card"
+    [class.open]="isOpen('guide')"
+    role="button"
+    tabindex="0"
+    (click)="toggleCard('guide')"
+    (keydown.enter)="toggleCard('guide')">
+
+    <mat-card-content>
+      <div class="help-card-header">
+        <span class="help-icon">
+          <mat-icon>menu_book</mat-icon>
+        </span>
+
+        <div>
+          <h2>Guía de uso</h2>
+          <p>Consulta los pasos principales para utilizar Credit Drive.</p>
+        </div>
+
+        <mat-icon class="expand-icon">
+          {{ isOpen('guide') ? 'expand_less' : 'expand_more' }}
+        </mat-icon>
+      </div>
+
+      @if (isOpen('guide')) {
+      <div class="help-card-body guide-preview" (click)="$event.stopPropagation()">
+        <p>
+          Aprende el flujo recomendado: registrar cliente, registrar vehículo, simular crédito,
+          revisar resultados, guardar la simulación y descargar el cronograma.
+        </p>
+
+        <a mat-flat-button class="guide-button" routerLink="/guide">
+          <mat-icon>arrow_forward</mat-icon>
+          Ver guía completa
+        </a>
+      </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</section>

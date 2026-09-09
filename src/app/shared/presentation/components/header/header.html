@@ -1,0 +1,14 @@
+﻿<mat-toolbar class="app-header">
+  <button
+    mat-icon-button
+    type="button"
+    class="menu-button"
+    [attr.aria-label]="'header.toggle-menu' | translate"
+    (click)="menuToggle.emit()"
+  >
+    <mat-icon aria-hidden="true">menu</mat-icon>
+  </button>
+
+  <span class="app-header-spacer"></span>
+
+</mat-toolbar>

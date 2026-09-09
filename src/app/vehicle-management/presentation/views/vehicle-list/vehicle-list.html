@@ -1,0 +1,86 @@
+<header class="vehicle-list-header">
+  <div>
+    <h1>{{ 'vehicles.list-title' | translate }}</h1>
+    <p>{{ 'vehicles.list-subtitle' | translate }}</p>
+  </div>
+  <button mat-flat-button class="new-vehicle-button" (click)="navigateToNew()">
+    <mat-icon>add</mat-icon>
+    {{ 'vehicles.new' | translate }}
+  </button>
+</header>
+
+@if (store.loading()) {
+  <mat-spinner diameter="40"></mat-spinner>
+}
+@if (store.error()) {
+  <p class="vehicle-list-error">{{ store.error() }}</p>
+}
+
+<div class="vehicle-table-wrapper">
+  <table mat-table [dataSource]="dataSource()" matSort matSortActive="brand" matSortDirection="asc" matSortDisableClear>
+    <ng-container matColumnDef="image">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let vehicle">
+        @if (vehicle.primaryImage) {
+          <img class="vehicle-thumb" [src]="vehicle.primaryImage.url" [alt]="vehicle.displayName" />
+        } @else {
+          <div class="vehicle-thumb vehicle-thumb-placeholder">
+            <mat-icon>directions_car</mat-icon>
+          </div>
+        }
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="vehicle">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header="brand">{{ 'vehicles.vehicle' | translate }}</th>
+      <td mat-cell *matCellDef="let vehicle">
+        <strong>{{ vehicle.brand }} {{ vehicle.model }}</strong>
+        <span class="vehicle-year">{{ vehicle.year }}</span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="color">
+      <th mat-header-cell *matHeaderCellDef>{{ 'vehicles.color' | translate }}</th>
+      <td mat-cell *matCellDef="let vehicle">{{ vehicle.color }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="price">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'vehicles.price' | translate }}</th>
+      <td mat-cell *matCellDef="let vehicle">{{ currencySymbol(vehicle) }} {{ vehicle.price | number:'1.2-2' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="stock">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'vehicles.stock' | translate }}</th>
+      <td mat-cell *matCellDef="let vehicle">{{ vehicle.stock }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef>{{ 'vehicles.status' | translate }}</th>
+      <td mat-cell *matCellDef="let vehicle">
+        <span class="status-pill" [class.status-active]="vehicle.status" [class.status-inactive]="!vehicle.status">
+          {{ (vehicle.status ? 'vehicles.status-active' : 'vehicles.status-inactive') | translate }}
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>{{ 'vehicles.actions' | translate }}</th>
+      <td mat-cell *matCellDef="let vehicle" class="vehicle-actions">
+        <button mat-icon-button class="action-button" [attr.aria-label]="'vehicles.view' | translate" (click)="viewVehicle(vehicle.id)">
+          <mat-icon>visibility</mat-icon>
+        </button>
+        <button mat-icon-button class="action-button edit-button" [attr.aria-label]="'vehicles.edit' | translate" (click)="editVehicle(vehicle.id)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button class="action-button delete-button" [attr.aria-label]="'vehicles.delete' | translate" (click)="deleteVehicle(vehicle.id)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+  <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+</div>

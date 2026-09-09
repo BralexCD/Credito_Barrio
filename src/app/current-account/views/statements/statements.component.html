@@ -1,0 +1,371 @@
+<div class="statements-page">
+  <div class="page-top-bar">
+    <div>
+      <h1 class="page-title">Estados de Cuenta y Liquidación de Obligaciones</h1>
+      <p class="page-subtitle">Generación de cierres periódicos, cálculo de intereses moratorios a la fecha (asOf), exportación y cobranza.</p>
+    </div>
+  </div>
+
+  <!-- SECCIÓN DE GENERACIÓN DE CIERRES -->
+  <div class="generate-card">
+    <div class="generate-header">
+      <div class="gen-title-block">
+        <span class="material-icons gen-icon">auto_mode</span>
+        <div>
+          <h2 class="gen-title">Generación de Estados de Cuenta por Fecha de Corte</h2>
+          <p class="gen-subtitle">Agrupa obligaciones pendientes cuyo corte sea menor o igual a la fecha seleccionada.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPLICACIÓN PEDAGÓGICA -->
+    <div class="academic-notice" role="note">
+      <span class="material-icons">school</span>
+      <span>
+        <strong>Explicación pedagógica:</strong> La fecha de cierre manual permite simular cortes a fin de día (End of Day) futuros o pasados para fines académicos y de evaluación de ciclos, en contraste con el cierre automático del sistema en tiempo real según hora local de Lima.
+      </span>
+    </div>
+
+    <div class="generate-form-row">
+      <div class="date-input-wrap">
+        <label for="cutoffDateInput" class="form-label">Fecha de Corte para Cierre (Día 1..28) *</label>
+        <input
+          id="cutoffDateInput"
+          type="date"
+          [value]="cutoffDate()"
+          (change)="cutoffDate.set($any($event.target).value)"
+          class="form-input date-input"
+        />
+      </div>
+
+      <button
+        class="btn btn-primary"
+        (click)="generateStatements()"
+        [disabled]="generating() || !cutoffDate()"
+      >
+        @if (generating()) {
+          <span class="spinner-sm"></span>
+          <span>Generando cierres...</span>
+        } @else {
+          <span class="material-icons">receipt_long</span>
+          <span>Generar Cierres Pendientes</span>
+        }
+      </button>
+    </div>
+
+    @if (generateMessage()) {
+      <div class="success-banner" role="status">
+        <span class="material-icons">check_circle</span>
+        <span>{{ generateMessage() }}</span>
+      </div>
+    }
+  </div>
+
+  <!-- FILTROS Y TABLA DE ESTADOS -->
+  <div class="table-card">
+    <div class="table-toolbar">
+      <div class="filters-wrap">
+        <div class="filter-item">
+          <label class="filter-label">Estado de Pago:</label>
+          <select [value]="filterStatus()" (change)="filterStatus.set($any($event.target).value)" class="form-select">
+            <option value="ALL">Todos los estados</option>
+            <option value="OPEN">Abiertos (Pendientes de pago)</option>
+            <option value="PAID">Pagados</option>
+          </select>
+        </div>
+
+        <div class="filter-item">
+          <label class="filter-label">Filtrar por Cliente:</label>
+          <select [value]="filterClientId()" (change)="filterClientId.set($any($event.target).value)" class="form-select">
+            <option value="ALL">Todos los clientes</option>
+            @for (c of store.clients(); track c.id) {
+              <option [value]="c.id">{{ c.name }}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <div class="count-tag">
+        {{ filteredStatements().length }} estados encontrados
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Nro Estado</th>
+            <th>Cliente Titular</th>
+            <th>Moneda</th>
+            <th>Fecha Corte</th>
+            <th>Fecha Vencimiento</th>
+            <th>Capital</th>
+            <th>Interés Comp.</th>
+            <th>Total Cierre</th>
+            <th>Estado</th>
+            <th>Fecha de Pago</th>
+            <th class="actions-col">Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (st of filteredStatements(); track st.id) {
+            <tr>
+              <td>
+                <span class="code-id">#{{ st.id.substring(0, 8) }}</span>
+              </td>
+              <td><strong>{{ st.clientName }}</strong></td>
+              <td>
+                <span class="curr-pill" [class.pen]="st.currency === 'PEN'" [class.usd]="st.currency === 'USD'">
+                  {{ st.currency }}
+                </span>
+              </td>
+              <td>{{ st.cutoffDate }}</td>
+              <td><span class="due-text">{{ st.dueDate }}</span></td>
+              <td class="num-cell">{{ st.principal | number:'1.2-2' }}</td>
+              <td class="num-cell">{{ st.interest | number:'1.2-2' }}</td>
+              <td class="num-cell total-cell">
+                {{ st.currency === 'PEN' ? 'S/' : '$' }} {{ st.total | number:'1.2-2' }}
+              </td>
+              <td>
+                <span class="status-pill" [class.open]="st.status === 'OPEN'" [class.paid]="st.status === 'PAID'">
+                  {{ st.status === 'OPEN' ? 'Abierto' : 'Pagado' }}
+                </span>
+              </td>
+              <td>
+                @if (st.paidAt) {
+                  <span class="paid-date">{{ st.paidAt | date:'yyyy-MM-dd' }}</span>
+                } @else {
+                  <span class="text-muted">—</span>
+                }
+              </td>
+              <td class="actions-col">
+                <button class="btn btn-sm btn-primary" (click)="openDetail(st)">
+                  <span class="material-icons">visibility</span>
+                  <span>Ver Detalle</span>
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="11" class="empty-cell">
+                No hay estados de cuenta que coincidan con los filtros seleccionados.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- MODAL: DETALLE DE ESTADO DE CUENTA Y LIQUIDACIÓN AS-OF -->
+  @if (selectedStatementId()) {
+    <div class="modal-backdrop" (click)="closeDetail()">
+      <div class="modal-card modal-lg" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+        <div class="modal-header">
+          <div>
+            <h2 class="modal-title">Liquidación de Estado de Cuenta</h2>
+            <span class="modal-subtitle">ID: {{ selectedStatementId() }}</span>
+          </div>
+          <button class="close-btn" (click)="closeDetail()" aria-label="Cerrar modal">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+
+        @if (detailLoading()) {
+          <div class="loading-box">
+            <span class="spinner-sm"></span>
+            <span>Calculando liquidación en el servidor...</span>
+          </div>
+        } @else if (statementDetail(); as det) {
+          <!-- HEADER AS OF PICKER -->
+          <div class="as-of-bar">
+            <div class="as-of-control">
+              <label for="asOfInput" class="as-of-lbl">Fecha de Liquidación (asOf):</label>
+              <input
+                id="asOfInput"
+                type="date"
+                [value]="asOfDate()"
+                [min]="det.cutoffDate"
+                (change)="onAsOfDateChange($any($event.target).value)"
+                class="form-input date-input-sm"
+              />
+              <span class="as-of-help">El cálculo 30E/360 ajusta mora e intereses según esta fecha (mínimo día de corte).</span>
+            </div>
+
+            <div class="as-of-actions">
+              <button class="btn btn-sm btn-secondary" (click)="downloadCsv()">
+                <span class="material-icons">file_download</span>
+                <span>Exportar CSV</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- SUMMARY CARDS -->
+          <div class="settlement-summary-grid">
+            <div class="sum-card">
+              <span class="sum-lbl">Cliente</span>
+              <span class="sum-val">{{ det.clientName }}</span>
+            </div>
+            <div class="sum-card">
+              <span class="sum-lbl">Fecha de Corte</span>
+              <span class="sum-val">{{ det.cutoffDate }}</span>
+            </div>
+            <div class="sum-card">
+              <span class="sum-lbl">Fecha de Vencimiento</span>
+              <span class="sum-val text-due">{{ det.dueDate }}</span>
+            </div>
+            <div class="sum-card">
+              <span class="sum-lbl">Días de Mora</span>
+              <span class="sum-val" [class.text-warn]="det.lateDays > 0">
+                {{ det.lateDays }} días{{ det.status === 'PAID' ? ' (cerrados al pago)' : '' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- ALLOCATION & TOTAL BREAKDOWN -->
+          <div class="allocation-box">
+            <h4 class="box-title">Desglose de Imputación de Pago (Orden Legal y Contractual)</h4>
+            <div class="alloc-grid">
+              <div class="alloc-item">
+                <span class="alloc-step">1. Interés Moratorio (Mora):</span>
+                <span class="alloc-val warn">{{ det.currency === 'PEN' ? 'S/' : '$' }} {{ det.allocation.lateInterest | number:'1.2-2' }}</span>
+              </div>
+              <div class="alloc-item">
+                <span class="alloc-step">2. Interés Compensatorio:</span>
+                <span class="alloc-val">{{ det.currency === 'PEN' ? 'S/' : '$' }} {{ det.allocation.interest | number:'1.2-2' }}</span>
+              </div>
+              <div class="alloc-item">
+                <span class="alloc-step">3. Capital Amortizado:</span>
+                <span class="alloc-val">{{ det.currency === 'PEN' ? 'S/' : '$' }} {{ det.allocation.capital | number:'1.2-2' }}</span>
+              </div>
+              <div class="alloc-item total-row">
+                <span class="alloc-step">
+                  {{ det.status === 'PAID' ? 'Total Liquidado y Cancelado:' : 'Total Exigible a la fecha:' }}
+                </span>
+                <span class="alloc-val total">
+                  {{ det.currency === 'PEN' ? 'S/' : '$' }} {{ (det.status === 'PAID' ? (det.paidAmount ?? (det.total + det.lateInterest)) : det.payableTotal) | number:'1.2-2' }}
+                </span>
+              </div>
+              @if (det.status === 'PAID') {
+                <div class="alloc-item" style="border-bottom: none; padding-top: 4px;">
+                  <span class="alloc-step" style="color: #15803d; font-weight: 700;">Saldo pendiente actual de este estado:</span>
+                  <span class="alloc-val" style="color: #15803d; font-weight: 700;">{{ det.currency === 'PEN' ? 'S/' : '$' }} 0.00</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- ITEMS DETAIL TABLE -->
+          <h4 class="box-title" style="margin-top: 16px;">Obligaciones y Compras Incluidas en el Cierre:</h4>
+          <div class="table-responsive">
+            <table class="schedule-table">
+              <thead>
+                <tr>
+                  <th>Fecha Compra</th>
+                  <th>Producto</th>
+                  <th>Cuota #</th>
+                  <th>Capital</th>
+                  <th>Interés</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of det.items; track item.purchaseId + item.installmentNumber) {
+                  <tr>
+                    <td>{{ item.purchasedAt | date:'yyyy-MM-dd' }}</td>
+                    <td>{{ item.productName }}</td>
+                    <td>{{ item.installmentNumber ? 'Cuota ' + item.installmentNumber : 'Fin de mes' }}</td>
+                    <td>{{ det.currency === 'PEN' ? 'S/' : '$' }} {{ item.capital | number:'1.2-2' }}</td>
+                    <td>{{ det.currency === 'PEN' ? 'S/' : '$' }} {{ item.interest | number:'1.2-2' }}</td>
+                    <td><strong>{{ det.currency === 'PEN' ? 'S/' : '$' }} {{ item.total | number:'1.2-2' }}</strong></td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- ACTION FOOTER -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeDetail()">
+              Cerrar
+            </button>
+            @if (det.status === 'OPEN') {
+              <button type="button" class="btn btn-primary" (click)="openPayDialog()">
+                <span class="material-icons">payments</span>
+                <span>Registrar Pago Exacto</span>
+              </button>
+            } @else {
+              <span class="paid-badge-lg">
+                <span class="material-icons">check_circle</span>
+                <span>Estado Cancelado el {{ det.paidAt | date:'yyyy-MM-dd' }}</span>
+              </span>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- MODAL DE PAGO EXACTO -->
+  @if (showPayModal()) {
+    <div class="modal-backdrop" (click)="closePayDialog()" style="z-index: 600;">
+      <div class="modal-card" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+        <div class="modal-header">
+          <h3 class="modal-title">Confirmación de Pago Exacto</h3>
+          <button class="close-btn" (click)="closePayDialog()" aria-label="Cerrar modal">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+
+        @if (payErrorMessage()) {
+          <div class="error-banner" role="alert">
+            <span class="material-icons">error_outline</span>
+            <span>{{ payErrorMessage() }}</span>
+          </div>
+        }
+
+        <div class="policy-notice">
+          <span class="material-icons">verified</span>
+          <span>
+            <strong>Política de Pago Único y Exacto:</strong> El sistema rechaza pagos parciales o excesos. La amortización cubre primero el interés moratorio devengado a la fecha elegida, luego el interés compensatorio y finalmente el capital.
+          </span>
+        </div>
+
+        @if (statementDetail(); as det) {
+          <div class="pay-form-body">
+            <div class="form-group">
+              <label class="form-label">Fecha Efectiva del Pago *</label>
+              <input
+                type="date"
+                [value]="payDate()"
+                [min]="det.cutoffDate"
+                (change)="onPayDateChange($any($event.target).value)"
+                class="form-input"
+              />
+            </div>
+
+            <div class="pay-amount-box">
+              <span class="p-amt-label">Monto Exacto a Pagar:</span>
+              <span class="p-amt-value">{{ det.currency === 'PEN' ? 'S/' : '$' }} {{ det.payableTotal | number:'1.2-2' }}</span>
+              <span class="p-amt-sub">Incluye mora de {{ det.lateDays }} días ({{ det.currency }} {{ det.lateInterest | number:'1.2-2' }})</span>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closePayDialog()" [disabled]="paying()">
+              Cancelar
+            </button>
+            <button type="button" class="btn btn-primary" (click)="confirmPayment()" [disabled]="paying()">
+              @if (paying()) {
+                <span class="spinner-sm"></span>
+                <span>Procesando pago...</span>
+              } @else {
+                <span class="material-icons">check</span>
+                <span>Confirmar Pago de {{ det.currency === 'PEN' ? 'S/' : '$' }} {{ det.payableTotal | number:'1.2-2' }}</span>
+              }
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

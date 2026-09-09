@@ -1,0 +1,74 @@
+@if (vehicle(); as v) {
+  <header class="vehicle-detail-header">
+    <button mat-stroked-button routerLink="/vehicles">
+      <mat-icon>arrow_back</mat-icon>
+      {{ 'vehicles.back' | translate }}
+    </button>
+    <button mat-flat-button class="edit-button" [routerLink]="['/vehicles', v.id, 'edit']">
+      <mat-icon>edit</mat-icon>
+      {{ 'vehicles.edit' | translate }}
+    </button>
+  </header>
+
+  <div class="vehicle-detail-grid">
+    <mat-card class="gallery-card">
+      <div class="main-image">
+        @if (displayedImageUrl()) {
+          <img [src]="displayedImageUrl()!" [alt]="v.displayName" />
+        } @else {
+          <div class="main-image-placeholder">
+            <mat-icon>directions_car</mat-icon>
+          </div>
+        }
+      </div>
+
+      @if (v.images.length > 1) {
+        <div class="thumbnail-row">
+          @for (image of v.images; track image.id) {
+            <button type="button" class="thumbnail-button" [class.active]="image.url === displayedImageUrl()" (click)="selectImage(image.url)">
+              <img [src]="image.url" [alt]="v.displayName" />
+            </button>
+          }
+        </div>
+      }
+    </mat-card>
+
+    <mat-card class="info-card">
+      <mat-card-content>
+        <h1>{{ v.displayName }}</h1>
+        <span class="status-pill" [class.status-active]="v.status" [class.status-inactive]="!v.status">
+          {{ (v.status ? 'vehicles.status-active' : 'vehicles.status-inactive') | translate }}
+        </span>
+
+        <dl class="vehicle-specs">
+          <div>
+            <dt>{{ 'vehicles.brand' | translate }}</dt>
+            <dd>{{ v.brand }}</dd>
+          </div>
+          <div>
+            <dt>{{ 'vehicles.model' | translate }}</dt>
+            <dd>{{ v.model }}</dd>
+          </div>
+          <div>
+            <dt>{{ 'vehicles.year' | translate }}</dt>
+            <dd>{{ v.year }}</dd>
+          </div>
+          <div>
+            <dt>{{ 'vehicles.color' | translate }}</dt>
+            <dd>{{ v.color }}</dd>
+          </div>
+          <div>
+            <dt>{{ 'vehicles.price' | translate }}</dt>
+            <dd>{{ currencySymbol() }} {{ v.price | number:'1.2-2' }}</dd>
+          </div>
+          <div>
+            <dt>{{ 'vehicles.stock' | translate }}</dt>
+            <dd>{{ v.stock }}</dd>
+          </div>
+        </dl>
+      </mat-card-content>
+    </mat-card>
+  </div>
+} @else {
+  <p>{{ 'vehicles.not-found' | translate }}</p>
+}

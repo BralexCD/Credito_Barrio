@@ -1,0 +1,163 @@
+:host {
+  display: block;
+}
+
+.guide-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.guide-header h1 {
+  margin: 0;
+  color: #211b2b;
+  font-size: 31px;
+  font-weight: 900;
+}
+
+.guide-header p {
+  margin: 6px 0 0;
+  color: #6f687a;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.back-help-button {
+  height: 44px;
+  border-radius: 8px;
+  color: var(--credit-primary) !important;
+  border-color: #c9b9df !important;
+  font-weight: 900;
+}
+
+.guide-intro-card {
+  margin-bottom: 22px;
+}
+
+.guide-intro-card mat-card {
+  border: 1px solid #efe7f4;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 8px 18px rgba(60, 39, 96, 0.07);
+}
+
+.guide-intro-card mat-card-content {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  padding: 24px;
+}
+
+.guide-intro-card mat-icon {
+  color: var(--credit-primary);
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+}
+
+.guide-intro-card h2 {
+  margin: 0;
+  color: #211b2b;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.guide-intro-card p {
+  margin: 6px 0 0;
+  color: #6f687a;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.55;
+}
+
+.guide-steps {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.guide-step-card {
+  display: flex;
+  gap: 16px;
+  padding: 22px;
+  border: 1px solid #efe7f4;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 8px 18px rgba(60, 39, 96, 0.06);
+}
+
+.step-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: #f4eef8;
+  color: var(--credit-primary);
+  flex-shrink: 0;
+}
+
+.step-icon mat-icon {
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+}
+
+.guide-step-card h2 {
+  margin: 0;
+  color: #211b2b;
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.guide-step-card p {
+  margin: 7px 0 0;
+  color: #6f687a;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.guide-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #efe7f4;
+}
+
+.guide-actions a {
+  height: 46px;
+  border-radius: 8px;
+  font-weight: 900;
+}
+
+.primary-action {
+  background: var(--credit-primary) !important;
+  color: #ffffff !important;
+}
+
+.secondary-action {
+  color: var(--credit-primary) !important;
+  border-color: #c9b9df !important;
+}
+
+@media (max-width: 900px) {
+  .guide-header,
+  .guide-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .guide-steps {
+    grid-template-columns: 2fr;
+  }
+
+  .guide-actions a {
+    width: 100%;
+  }
+}

@@ -1,0 +1,72 @@
+<div class="customer-catalog-page">
+  <div class="page-top-bar">
+    <div>
+      <h1 class="page-title">Catálogo de Productos Disponibles</h1>
+      <p class="page-subtitle">Productos y precios habilitados para compras a crédito en tu comercio asociado.</p>
+    </div>
+  </div>
+
+  <div class="currency-info-box" role="note">
+    <span class="material-icons">info</span>
+    <span>
+      Los precios expuestos corresponden a la moneda de tu cuenta titular (Soles o Dólares).
+    </span>
+  </div>
+
+  <div class="catalog-grid">
+    @for (p of store.products(); track p.id) {
+      @if (p.active) {
+        <div class="product-card">
+          <div class="product-image-container">
+            @if (p.imageUrl) {
+              <img [src]="p.imageUrl" [alt]="p.name" class="product-img" onerror="this.style.display='none'" />
+            } @else {
+              <div class="product-placeholder-icon">
+                <span class="material-icons">inventory_2</span>
+              </div>
+            }
+          </div>
+
+          <div class="product-body">
+            <div class="product-meta">
+              <span class="product-brand">{{ p.brand }}</span>
+              <span class="product-unit">Por: {{ p.unit }}</span>
+            </div>
+
+            <h2 class="product-name">{{ p.name }}</h2>
+            @if (p.description) {
+              <p class="product-desc">{{ p.description }}</p>
+            }
+
+            <div class="prices-row">
+              <div class="price-item">
+                <span class="price-lbl">Precio Contado:</span>
+                <span class="price-val">{{ p.cashPrice | number:'1.2-2' }}</span>
+              </div>
+              <div class="price-item credit">
+                <span class="price-lbl">Precio a Crédito:</span>
+                <span class="price-val credit-val">{{ p.creditPrice | number:'1.2-2' }}</span>
+              </div>
+            </div>
+
+            <div class="modalities-tag-row">
+              <span class="mod-tag" [class.enabled]="p.allowEndOfMonth">
+                <span class="material-icons">{{ p.allowEndOfMonth ? 'check' : 'close' }}</span>
+                Fin de Mes
+              </span>
+              <span class="mod-tag" [class.enabled]="p.allowInstallments">
+                <span class="material-icons">{{ p.allowInstallments ? 'check' : 'close' }}</span>
+                Cuotas
+              </span>
+            </div>
+          </div>
+        </div>
+      }
+    } @empty {
+      <div class="empty-catalog-notice">
+        <span class="material-icons">store</span>
+        <p>No hay productos activos en el catálogo de este comercio.</p>
+      </div>
+    }
+  </div>
+</div>

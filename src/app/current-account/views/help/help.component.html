@@ -1,0 +1,185 @@
+<div class="help-page">
+  <div class="page-top-bar">
+    <div>
+      <h1 class="page-title">Guía de Reglas Financieras y Convenciones</h1>
+      <p class="page-subtitle">Manual explicativo de los modelos matemáticos y directivas de crédito de Crédito Barrio.</p>
+    </div>
+  </div>
+
+  <div class="help-grid">
+    <!-- REGLA 1: CONVENCIÓN 30E/360 -->
+    <div class="help-card">
+      <div class="card-icon"><span class="material-icons">calendar_today</span></div>
+      <h2 class="card-title">1. Convención de Conteo de Días 30E/360</h2>
+      <p class="card-text">
+        El sistema utiliza la convención bancaria europea 30E/360 comercial. Todos los meses se consideran de 30 días y el año base tiene 360 días:
+      </p>
+      <div class="formula-box">
+        <code>d = 360 × (Y₂ - Y₁) + 30 × (M₂ - M₁) + min(D₂, 30) - min(D₁, 30)</code>
+      </div>
+      <p class="card-subtext">
+        No se utiliza la convención Actual/365 para evitar distorsiones por meses de diferente longitud o bisiestos.
+      </p>
+    </div>
+
+    <!-- REGLA 2: DÍAS 1 AL 28 -->
+    <div class="help-card">
+      <div class="card-icon"><span class="material-icons">event_repeat</span></div>
+      <h2 class="card-title">2. Días Configurables Restringidos a 1..28</h2>
+      <p class="card-text">
+        Tanto el <strong>día de corte</strong> como el <strong>día de pago pactado</strong> están estrictamente restringidos al rango entre <strong>1 y 28</strong>.
+      </p>
+      <p class="card-subtext">
+        <strong>Justificación financiera:</strong> Esta restricción previene anomalías de calendario en febrero (que solo tiene 28 o 29 días) y en meses de 30 días, garantizando que el ciclo mensual exista exactamente en todos los periodos del año.
+      </p>
+    </div>
+
+    <!-- REGLA 3: CORTE Y VENCIMIENTO -->
+    <div class="help-card">
+      <div class="card-icon"><span class="material-icons">schedule</span></div>
+      <h2 class="card-title">3. Determinación de Ciclo, Corte y Vencimiento</h2>
+      <p class="card-text">
+        Una compra se asigna al ciclo según la hora exacta de compra frente a la fecha y hora de corte de su mes:
+      </p>
+      <ul class="help-list">
+        <li><strong>Antes o igual al corte:</strong> se liquida en el corte de ese mismo mes.</li>
+        <li><strong>Posterior al corte:</strong> se transfiere automáticamente al corte del mes siguiente.</li>
+        <li><strong>Vencimiento del ciclo:</strong> si <code>paymentDay &gt; cutoffDay</code>, vence el día de pago del mismo mes del corte; de lo contrario, vence en el mes siguiente.</li>
+      </ul>
+    </div>
+
+    <!-- REGLA 4: GRACIA CAPITALIZADA Y MÉTODO FRANCÉS -->
+    <div class="help-card">
+      <div class="card-icon"><span class="material-icons">calculate</span></div>
+      <h2 class="card-title">4. Gracia Capitalizada y Cronograma Francés</h2>
+      <p class="card-text">
+        Para ventas en cuotas, el capital original se capitaliza durante los días de gracia entre la compra y el primer vencimiento de referencia:
+      </p>
+      <div class="formula-box">
+        <code>P = C × (1 + i_diaria)^d_gracia</code>
+      </div>
+      <p class="card-text">
+        La primera cuota vence exactamente <strong>un mes después del vencimiento de referencia</strong>. Se generan <em>n</em> cuotas mensuales iguales según la anualidad francesa:
+      </p>
+      <div class="formula-box">
+        <code>A = P × i₃₀ / [1 - (1 + i₃₀)^(-n)]</code>
+      </div>
+      <p class="card-subtext">
+        Si la tasa compensatoria es 0%, <code>A = P / n</code>. La última amortización se ajusta al centavo exacto eliminando errores residuales.
+      </p>
+    </div>
+
+    <!-- REGLA 5: CONVERSIÓN DE TASAS -->
+    <div class="help-card">
+      <div class="card-icon"><span class="material-icons">percent</span></div>
+      <h2 class="card-title">5. Conversión de Tasas (TEA y TNA)</h2>
+      <p class="card-text">
+        Todas las tasas se configuran en porcentaje anual y se procesan sin truncamiento con al menos 7 decimales de precisión:
+      </p>
+      <div class="formula-box">
+        <strong>Tasa Efectiva Anual (TEA, E%):</strong><br />
+        <code>i_d = (1 + E/100)^(d / 360) - 1</code>
+      </div>
+      <div class="formula-box">
+        <strong>Tasa Nominal Anual (TNA, J%) con capitalización cada k días:</strong><br />
+        <code>i_d = [1 + (J/100) / (360 / k)]^(d / k) - 1</code>
+      </div>
+      <p class="card-subtext">
+        Los periodos de capitalización permitidos para TNA son: 1 (diaria), 15 (quincenal), 30 (mensual), 60 (bimestral), 90 (trimestral), 180 (semestral) y 360 días (anual).
+      </p>
+    </div>
+
+    <!-- REGLA 6: INTERÉS MORATORIO Y ORDEN DE IMPUTACIÓN -->
+    <div class="help-card">
+      <div class="card-icon"><span class="material-icons">gavel</span></div>
+      <h2 class="card-title">6. Interés Moratorio y Cascada de Pago Exacto</h2>
+      <p class="card-text">
+        La mora se calcula únicamente cuando la fecha de liquidación o pago es posterior al vencimiento (<code>asOf &gt; dueDate</code>). La base de cálculo es la suma del capital y del interés compensatorio vencidos.
+      </p>
+      <p class="card-text">
+        <strong>Orden de imputación legal estricto:</strong>
+      </p>
+      <ol class="help-list-ordered">
+        <li><strong>1° Interés Moratorio (Mora):</strong> cancela primero los recargos por mora devengados a la fecha.</li>
+        <li><strong>2° Interés Compensatorio:</strong> cubre el rendimiento financiero ordinario pactado.</li>
+        <li><strong>3° Capital Principal:</strong> extingue la amortización del crédito.</li>
+      </ol>
+      <p class="card-subtext">
+        Por directiva del sistema, los pagos deben ser <strong>exactos</strong> por el total adeudado a la fecha. No se permiten pagos parciales ni excesos.
+      </p>
+    </div>
+
+    <!-- REGLA 7: EXPOSICIÓN DE CRÉDITO -->
+    <div class="help-card">
+      <div class="card-icon"><span class="material-icons">shield</span></div>
+      <h2 class="card-title">7. Exposición de Crédito y Límite Conservador</h2>
+      <p class="card-text">
+        La exposición de crédito se define como el capital pendiente de todas las obligaciones vivas (incluyendo la gracia capitalizada).
+      </p>
+      <p class="card-subtext">
+        El sistema rechaza cualquier nueva compra si <code>exposición actual + nuevo principal capitalizado &gt; límite de crédito</code>. El límite de un cliente no puede ser reducido por debajo de su exposición vigente.
+      </p>
+    </div>
+
+    <!-- REGLA 8: AISLAMIENTO MONETARIO -->
+    <div class="help-card">
+      <div class="card-icon"><span class="material-icons">monetization_on</span></div>
+      <h2 class="card-title">8. Estricta Segregación Monetaria (No FX Mix)</h2>
+      <p class="card-text">
+        Las operaciones en Soles (PEN) y Dólares (USD) operan de forma estanca. Está prohibido sumar importes en distintas divisas en los tableros de control. Cada cliente tiene una moneda asignada y sus compras se valorizan directamente en dicha moneda.
+      </p>
+    </div>
+  </div>
+
+  <!-- CREDENCIALES DE DEMOSTRACIÓN -->
+  <div class="demo-card">
+    <div class="demo-header">
+      <span class="material-icons demo-icon">vpn_key</span>
+      <div>
+        <h2 class="demo-title">Credenciales de Demostración Local (Base de Datos Seed)</h2>
+        <p class="demo-sub">
+          Cuentas precargadas para evaluación y pruebas de aislamiento multitenant.
+        </p>
+      </div>
+    </div>
+
+    <div class="creds-table-wrap">
+      <table class="creds-table">
+        <thead>
+          <tr>
+            <th>Rol en el Sistema</th>
+            <th>Usuario</th>
+            <th>Contraseña</th>
+            <th>Propósito y Alcance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="role-chip plat">PLATFORM_ADMIN</span></td>
+            <td><code>plataforma</code></td>
+            <td><code>Barrio2026!</code></td>
+            <td>Alta y administración de tiendas, supervisión del log de auditoría central.</td>
+          </tr>
+          <tr>
+            <td><span class="role-chip store">STORE_ADMIN</span></td>
+            <td><code>bodega</code></td>
+            <td><code>Barrio2026!</code></td>
+            <td>Comercio principal (Bodega). Productos, clientes, ventas, cierres y cobranzas.</td>
+          </tr>
+          <tr>
+            <td><span class="role-chip store">STORE_ADMIN</span></td>
+            <td><code>salon</code></td>
+            <td><code>Barrio2026!</code></td>
+            <td>Segundo comercio (Salón de Belleza). Demuestra el aislamiento estricto de datos entre tiendas.</td>
+          </tr>
+          <tr>
+            <td><span class="role-chip cust">CUSTOMER</span></td>
+            <td><code>cliente</code></td>
+            <td><code>Barrio2026!</code></td>
+            <td>Cliente titular con línea de crédito. Consulta de línea, estados, cronogramas y catálogo.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

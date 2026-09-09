@@ -1,0 +1,16 @@
+﻿.app-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 10px 24px;
+  color: var(--credit-muted);
+  border-top: 1px solid var(--credit-border);
+  background: #fbf8fd;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.footer-powered {
+  opacity: 0.8;
+}

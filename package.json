@@ -1,0 +1,49 @@
+{
+  "name": "credit-drive",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "node scripts/dev.mjs",
+    "dev": "node scripts/dev.mjs",
+    "serve": "node local-server/server.mjs",
+    "start:api": "node local-server/server.mjs",
+    "start:web": "ng serve --host 127.0.0.1 --proxy-config proxy.conf.json",
+    "test:local": "node --test local-server/*.test.mjs",
+    "test:e2e": "node scripts/browser-smoke.mjs",
+    "build": "ng build --configuration production",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=24.15.0"
+  },
+  "packageManager": "npm@11.12.1",
+  "dependencies": {
+    "@angular/cdk": "^21.2.13",
+    "@angular/common": "^21.2.0",
+    "@angular/compiler": "^21.2.0",
+    "@angular/core": "^21.2.0",
+    "@angular/forms": "^21.2.0",
+    "@angular/material": "^21.2.13",
+    "@angular/platform-browser": "^21.2.0",
+    "@angular/router": "^21.2.0",
+    "@ngx-translate/core": "^17.0.0",
+    "@ngx-translate/http-loader": "^17.0.0",
+    "@supabase/supabase-js": "^2.108.2",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@angular/build": "^21.2.12",
+    "@angular/cli": "^21.2.12",
+    "@angular/compiler-cli": "^21.2.0",
+    "@playwright/test": "^1.63.0",
+    "jsdom": "^28.0.0",
+    "json-server": "^0.17.4",
+    "prettier": "^3.8.1",
+    "typescript": "~5.9.2",
+    "vitest": "^4.0.8"
+  }
+}

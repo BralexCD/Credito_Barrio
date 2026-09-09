@@ -1,0 +1,394 @@
+﻿:host {
+  display: block;
+}
+
+.dashboard-header {
+  margin-bottom: 36px;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  color: var(--credit-primary);
+  font-size: 34px;
+  line-height: 1.1;
+  font-weight: 800;
+}
+
+.dashboard-header p {
+  margin: 8px 0 0;
+  color: var(--credit-muted);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(160px, 1fr));
+  gap: 24px;
+  margin-bottom: 42px;
+}
+
+.kpi-card,
+.recent-card,
+.goal-card {
+  border-radius: 8px;
+  box-shadow: var(--credit-shadow);
+}
+
+.kpi-card,
+.recent-card,
+.quick-actions {
+  background: #ffffff !important;
+}
+
+:host ::ng-deep .mat-mdc-card {
+  background-color: #ffffff;
+}
+
+.dashboard-lower-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.recent-card {
+  width: 100%;
+}
+
+.kpi-content {
+  display: grid;
+  gap: 8px;
+  min-height: 112px;
+  padding: 20px;
+}
+
+.kpi-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.kpi-icon-wrap {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 7px;
+  color: var(--credit-primary);
+  background: var(--credit-primary-muted);
+}
+
+.kpi-delta {
+  color: var(--credit-warning);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.kpi-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--credit-muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.kpi-help {
+  width: 14px;
+  height: 14px;
+  font-size: 14px;
+  cursor: help;
+}
+
+.kpi-value {
+  color: var(--credit-text);
+  font-size: 26px;
+  line-height: 1;
+  font-weight: 800;
+}
+
+.quick-actions {
+  margin-bottom: 44px;
+}
+
+.quick-actions h2,
+.section-title-row h2,
+.goal-card h2 {
+  margin: 0;
+  color: var(--credit-text);
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.quick-actions h2 {
+  margin-bottom: 20px;
+}
+
+.quick-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
+  gap: clamp(20px, 7vw, 80px);
+}
+
+.quick-button {
+  height: 62px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.quick-primary {
+  background: var(--credit-primary) !important;
+  color: #ffffff !important;
+}
+
+.quick-secondary {
+  background: #e5deea !important;
+  color: var(--credit-primary) !important;
+}
+
+.dashboard-lower-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(240px, 0.95fr);
+  gap: 24px;
+}
+
+.recent-card mat-card-content,
+.goal-card mat-card-content {
+  padding: 24px;
+}
+
+.section-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.section-title-row a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--credit-primary);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.section-title-row mat-icon {
+  width: 14px;
+  height: 14px;
+  font-size: 14px;
+}
+
+.recent-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--credit-text);
+}
+
+.recent-table th {
+  padding: 0 0 12px;
+  color: var(--credit-muted);
+  border-bottom: 1px solid var(--credit-border);
+  font-size: 12px;
+  font-weight: 800;
+  text-align: left;
+}
+
+.recent-table td {
+  padding: 15px 0;
+  border-bottom: 1px solid #eee9f3;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  min-width: 72px;
+  justify-content: center;
+  padding: 4px 9px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.status-pill.warning,
+.warning {
+  background: #d9bd4b;
+  color: #624b05;
+}
+
+.status-pill.success,
+.success {
+  background: var(--credit-primary-soft);
+  color: #ffffff;
+}
+
+.status-pill.neutral,
+.neutral {
+  background: #e8e0ea;
+  color: #65596b;
+}
+
+.goal-card {
+  background: var(--credit-primary-soft);
+  color: #ffffff;
+}
+
+.goal-card h2 {
+  color: #e8ddfb;
+}
+
+.goal-card mat-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  min-height: 320px;
+}
+
+.goal-ring {
+  display: grid;
+  place-items: center;
+  width: 116px;
+  height: 116px;
+  margin-top: 28px;
+  border-radius: 50%;
+  padding: 8px;
+}
+
+.goal-ring::before {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--credit-primary-soft);
+  content: '';
+}
+
+.goal-ring span {
+  z-index: 1;
+  grid-area: 1 / 1;
+  color: #efe8ff;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.goal-card p {
+  max-width: 220px;
+  margin: 0;
+  color: #cfc1ea;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.goal-card a {
+  width: 100%;
+  height: 54px;
+  border-radius: 7px;
+  background: #e2d5ff !important;
+  color: var(--credit-primary) !important;
+  font-weight: 800;
+}
+
+@media (max-width: 1080px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+  }
+
+  .dashboard-lower-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .dashboard-header h1 {
+    font-size: 28px;
+  }
+
+  .kpi-grid,
+  .quick-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .recent-table {
+    min-width: 560px;
+  }
+
+  .recent-card {
+    overflow-x: auto;
+  }
+}
+
+.dashboard-lower-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.recent-card {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  border: 1px solid #efe7f4;
+  border-radius: 10px;
+  background: #ffffff !important;
+  box-shadow: 0 8px 18px rgba(60, 39, 96, 0.07);
+}
+
+.recent-card mat-card-content {
+  padding: 24px;
+}
+
+.section-title-row {
+  max-width: 980px;
+  margin: 0 auto 18px;
+}
+
+.recent-table {
+  width: min(100%, 980px);
+  margin: 0 auto;
+  border-collapse: collapse;
+}
+
+.quick-actions {
+  padding: 24px;
+  border: 1px solid #efe7f4;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 8px 18px rgba(60, 39, 96, 0.07);
+}
+
+.quick-actions h2 {
+  margin: 0 0 18px;
+  color: #2f2938;
+  font-size: 19px;
+  font-weight: 900;
+}
+
+.quick-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.quick-button {
+  height: 48px;
+  border-radius: 8px !important;
+  font-weight: 900;
+  box-shadow: none !important;
+}
+
+.quick-primary {
+  background: var(--credit-primary) !important;
+  color: #ffffff !important;
+}
+
+.quick-secondary {
+  background: #f4eef8 !important;
+  color: var(--credit-primary) !important;
+}

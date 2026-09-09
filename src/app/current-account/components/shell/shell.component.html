@@ -1,0 +1,252 @@
+<div class="app-layout">
+  <!-- Top Navbar -->
+  <header class="navbar" role="banner">
+    <div class="navbar-left">
+      <button
+        class="mobile-toggle-btn"
+        (click)="toggleMobileMenu()"
+        [attr.aria-expanded]="mobileMenuOpen()"
+        aria-label="Alternar navegación móvil"
+      >
+        <span class="material-icons">menu</span>
+      </button>
+
+      <a routerLink="/current-account/dashboard" class="brand" (click)="closeMobileMenu()">
+        <span class="brand-icon material-icons">account_balance_wallet</span>
+        <div class="brand-text">
+          <span class="brand-title">Crédito Barrio</span>
+          <span class="brand-subtitle">Cuentas Corrientes</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="navbar-right">
+      <button
+        class="refresh-btn"
+        (click)="refreshData()"
+        [disabled]="store.loading()"
+        title="Sincronizar datos con el servidor"
+        aria-label="Sincronizar datos"
+      >
+        <span class="material-icons" [class.spinning]="store.loading()">sync</span>
+        <span class="refresh-text">Sincronizar</span>
+      </button>
+
+      @if (auth.currentUser(); as user) {
+        <div class="user-chip">
+          <div class="user-avatar" aria-hidden="true">
+            {{ user.name.charAt(0).toUpperCase() }}
+          </div>
+          <div class="user-details">
+            <span class="user-name">{{ user.name }}</span>
+            <span class="user-role-badge" [attr.data-role]="user.role">
+              {{ getRoleLabel(user.role) }}
+            </span>
+          </div>
+        </div>
+
+        <button
+          class="logout-btn"
+          (click)="logout()"
+          title="Cerrar sesión"
+          aria-label="Cerrar sesión"
+        >
+          <span class="material-icons">logout</span>
+          <span class="logout-text">Salir</span>
+        </button>
+      }
+    </div>
+  </header>
+
+  <!-- Notification Banners -->
+  @if (store.error()) {
+    <div class="banner banner-error" role="alert">
+      <div class="banner-content">
+        <span class="material-icons">error_outline</span>
+        <span class="banner-msg">{{ store.error() }}</span>
+      </div>
+      <button class="banner-close" (click)="store.clearMessages()" aria-label="Cerrar alerta">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+  }
+
+  @if (store.successMessage()) {
+    <div class="banner banner-success" role="status">
+      <div class="banner-content">
+        <span class="material-icons">check_circle</span>
+        <span class="banner-msg">{{ store.successMessage() }}</span>
+      </div>
+      <button class="banner-close" (click)="store.clearMessages()" aria-label="Cerrar mensaje">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+  }
+
+  <div class="main-container">
+    <!-- Sidebar / Drawer -->
+    <aside class="sidebar" [class.open]="mobileMenuOpen()" role="navigation" aria-label="Navegación principal">
+      <div class="sidebar-header mobile-only">
+        <span class="sidebar-title">Menú de Navegación</span>
+        <button class="close-sidebar-btn" (click)="closeMobileMenu()" aria-label="Cerrar menú">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      <nav class="nav-menu">
+        <!-- ROL: PLATFORM_ADMIN -->
+        @if (auth.hasRole('PLATFORM_ADMIN')) {
+          <div class="nav-section-title">ADMINISTRACIÓN CENTRAL</div>
+          <a
+            routerLink="/current-account/dashboard"
+            routerLinkActive="active"
+            (click)="closeMobileMenu()"
+            class="nav-item"
+          >
+            <span class="material-icons">dashboard</span>
+            <span>Tablero General</span>
+          </a>
+          <a
+            routerLink="/current-account/stores"
+            routerLinkActive="active"
+            (click)="closeMobileMenu()"
+            class="nav-item"
+          >
+            <span class="material-icons">storefront</span>
+            <span>Gestión de Tiendas</span>
+          </a>
+          <a
+            routerLink="/current-account/audit"
+            routerLinkActive="active"
+            (click)="closeMobileMenu()"
+            class="nav-item"
+          >
+            <span class="material-icons">history_edu</span>
+            <span>Registro de Auditoría</span>
+          </a>
+        }
+
+        <!-- ROL: STORE_ADMIN -->
+        @if (auth.hasRole('STORE_ADMIN')) {
+          <div class="nav-section-title">GESTIÓN DE COMERCIO</div>
+          <a
+            routerLink="/current-account/dashboard"
+            routerLinkActive="active"
+            (click)="closeMobileMenu()"
+            class="nav-item"
+          >
+            <span class="material-icons">analytics</span>
+            <span>Tablero Financiero</span>
+          </a>
+          <a
+            routerLink="/current-account/products"
+            routerLinkActive="active"
+            (click)="closeMobileMenu()"
+            class="nav-item"
+          >
+            <span class="material-icons">inventory_2</span>
+            <span>Catálogo de Productos</span>
+          </a>
+          <a
+            routerLink="/current-account/clients"
+            routerLinkActive="active"
+            (click)="closeMobileMenu()"
+            class="nav-item"
+          >
+            <span class="material-icons">people_alt</span>
+            <span>Cuentas de Clientes</span>
+          </a>
+          <a
+            routerLink="/current-account/purchases"
+            routerLinkActive="active"
+            (click)="closeMobileMenu()"
+            class="nav-item"
+          >
+            <span class="material-icons">shopping_cart_checkout</span>
+            <span>Ventas a Crédito</span>
+          </a>
+          <a
+            routerLink="/current-account/statements"
+            routerLinkActive="active"
+            (click)="closeMobileMenu()"
+            class="nav-item"
+          >
+            <span class="material-icons">receipt_long</span>
+            <span>Estados de Cuenta</span>
+          </a>
+          <a
+            routerLink="/current-account/payments"
+            routerLinkActive="active"
+            (click)="closeMobileMenu()"
+            class="nav-item"
+          >
+            <span class="material-icons">payments</span>
+            <span>Cobranzas y Pagos</span>
+          </a>
+        }
+
+        <!-- ROL: CUSTOMER -->
+        @if (auth.hasRole('CUSTOMER')) {
+          <div class="nav-section-title">MI CUENTA CORRIENTE</div>
+          <a
+            routerLink="/current-account/dashboard"
+            routerLinkActive="active"
+            (click)="closeMobileMenu()"
+            class="nav-item"
+          >
+            <span class="material-icons">credit_card</span>
+            <span>Estado de Mi Línea</span>
+          </a>
+          <a
+            routerLink="/current-account/my-statements"
+            routerLinkActive="active"
+            (click)="closeMobileMenu()"
+            class="nav-item"
+          >
+            <span class="material-icons">receipt</span>
+            <span>Mis Estados de Cuenta</span>
+          </a>
+          <a
+            routerLink="/current-account/my-purchases"
+            routerLinkActive="active"
+            (click)="closeMobileMenu()"
+            class="nav-item"
+          >
+            <span class="material-icons">shopping_bag</span>
+            <span>Mis Compras a Crédito</span>
+          </a>
+          <a
+            routerLink="/current-account/catalog"
+            routerLinkActive="active"
+            (click)="closeMobileMenu()"
+            class="nav-item"
+          >
+            <span class="material-icons">store</span>
+            <span>Catálogo de la Tienda</span>
+          </a>
+        }
+
+        <div class="nav-section-title">DOCUMENTACIÓN</div>
+        <a
+          routerLink="/current-account/help"
+          routerLinkActive="active"
+          (click)="closeMobileMenu()"
+          class="nav-item"
+        >
+          <span class="material-icons">menu_book</span>
+          <span>Reglas Financieras</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Overlay backdrop for mobile menu -->
+    @if (mobileMenuOpen()) {
+      <div class="mobile-backdrop" (click)="closeMobileMenu()" aria-hidden="true"></div>
+    }
+
+    <!-- Routed Page Content -->
+    <main class="page-content" role="main">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

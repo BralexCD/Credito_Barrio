@@ -1,0 +1,308 @@
+<div class="dashboard-page">
+  <div class="dashboard-header">
+    <div>
+      <h1 class="page-title">
+        @if (auth.hasRole('PLATFORM_ADMIN')) { Tablero de Control — Administración Central }
+        @if (auth.hasRole('STORE_ADMIN')) { Tablero Financiero del Comercio }
+        @if (auth.hasRole('CUSTOMER')) { Resumen de Mi Línea de Crédito }
+      </h1>
+      <p class="page-subtitle">
+        @if (auth.hasRole('PLATFORM_ADMIN')) { Monitoreo multi-tienda, estado de comercios y registro de eventos. }
+        @if (auth.hasRole('STORE_ADMIN')) { Cuentas de crédito rotativo con estricta separación por divisa y cálculo 30E/360. }
+        @if (auth.hasRole('CUSTOMER')) { Consulta en tiempo real de tu línea, compras activas y estados de cuenta. }
+      </p>
+    </div>
+  </div>
+
+  <!-- PLATFORM ADMIN VIEW -->
+  @if (auth.hasRole('PLATFORM_ADMIN')) {
+    <div class="metrics-grid">
+      <div class="metric-card primary">
+        <div class="metric-icon"><span class="material-icons">storefront</span></div>
+        <div class="metric-info">
+          <span class="metric-label">Tiendas Totales</span>
+          <span class="metric-value">{{ platformMetrics().totalStores }}</span>
+        </div>
+      </div>
+
+      <div class="metric-card success">
+        <div class="metric-icon"><span class="material-icons">check_circle</span></div>
+        <div class="metric-info">
+          <span class="metric-label">Tiendas Activas</span>
+          <span class="metric-value">{{ platformMetrics().activeStores }}</span>
+        </div>
+      </div>
+
+      <div class="metric-card warning">
+        <div class="metric-icon"><span class="material-icons">pause_circle_filled</span></div>
+        <div class="metric-info">
+          <span class="metric-label">Tiendas Inactivas</span>
+          <span class="metric-value">{{ platformMetrics().inactiveStores }}</span>
+        </div>
+      </div>
+
+      <div class="metric-card neutral">
+        <div class="metric-icon"><span class="material-icons">history_edu</span></div>
+        <div class="metric-info">
+          <span class="metric-label">Registros Auditoría</span>
+          <span class="metric-value">{{ platformMetrics().totalAuditEntries }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-actions-card">
+      <h2 class="card-title">Acciones de Plataforma</h2>
+      <div class="action-buttons-wrap">
+        <a routerLink="/current-account/stores" class="btn btn-primary">
+          <span class="material-icons">add_business</span>
+          <span>Dar de Alta Nueva Tienda</span>
+        </a>
+        <a routerLink="/current-account/stores" class="btn btn-secondary">
+          <span class="material-icons">store</span>
+          <span>Gestionar Comercios</span>
+        </a>
+        <a routerLink="/current-account/audit" class="btn btn-secondary">
+          <span class="material-icons">view_list</span>
+          <span>Inspeccionar Registro de Auditoría</span>
+        </a>
+      </div>
+    </div>
+  }
+
+  <!-- STORE ADMIN VIEW -->
+  @if (auth.hasRole('STORE_ADMIN')) {
+    <div class="currency-warning-note" role="note">
+      <span class="material-icons">info</span>
+      <span>
+        <strong>Principio Financiero:</strong> Cartera monetaria segregada. Las operaciones en Soles (PEN) y Dólares (USD) se calculan y reportan de manera independiente sin agregación bimonetaria ficticia.
+      </span>
+    </div>
+
+    <!-- SOLES SECTION -->
+    <div class="currency-block">
+      <div class="currency-block-header">
+        <div class="currency-badge pen">
+          <span class="currency-flag">PEN</span>
+          <span>Cartera en Soles (S/)</span>
+        </div>
+        <span class="currency-client-count">{{ store.penMetrics().activeClientsCount }} clientes activos</span>
+      </div>
+
+      <div class="metrics-grid">
+        <div class="metric-card warning">
+          <div class="metric-icon"><span class="material-icons">trending_up</span></div>
+          <div class="metric-info">
+            <span class="metric-label">Capital Colocado (Exposición)</span>
+            <span class="metric-value">S/ {{ store.penMetrics().outstandingCapital | number:'1.2-2' }}</span>
+          </div>
+        </div>
+
+        <div class="metric-card success">
+          <div class="metric-icon"><span class="material-icons">account_balance_wallet</span></div>
+          <div class="metric-info">
+            <span class="metric-label">Línea Disponible Total</span>
+            <span class="metric-value">S/ {{ store.penMetrics().availableCredit | number:'1.2-2' }}</span>
+          </div>
+        </div>
+
+        <div class="metric-card primary">
+          <div class="metric-icon"><span class="material-icons">credit_score</span></div>
+          <div class="metric-info">
+            <span class="metric-label">Línea Total Autorizada</span>
+            <span class="metric-value">S/ {{ store.penMetrics().totalLimit | number:'1.2-2' }}</span>
+          </div>
+        </div>
+
+        <div class="metric-card neutral">
+          <div class="metric-icon"><span class="material-icons">pending_actions</span></div>
+          <div class="metric-info">
+            <span class="metric-label">Cierres Pendientes</span>
+            <span class="metric-value">{{ store.penMetrics().openStatementsCount }} (S/ {{ store.penMetrics().openPayableTotal | number:'1.2-2' }})</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DÓLARES SECTION -->
+    <div class="currency-block">
+      <div class="currency-block-header">
+        <div class="currency-badge usd">
+          <span class="currency-flag">USD</span>
+          <span>Cartera en Dólares ($)</span>
+        </div>
+        <span class="currency-client-count">{{ store.usdMetrics().activeClientsCount }} clientes activos</span>
+      </div>
+
+      <div class="metrics-grid">
+        <div class="metric-card warning">
+          <div class="metric-icon"><span class="material-icons">trending_up</span></div>
+          <div class="metric-info">
+            <span class="metric-label">Capital Colocado (Exposición)</span>
+            <span class="metric-value">$ {{ store.usdMetrics().outstandingCapital | number:'1.2-2' }}</span>
+          </div>
+        </div>
+
+        <div class="metric-card success">
+          <div class="metric-icon"><span class="material-icons">account_balance_wallet</span></div>
+          <div class="metric-info">
+            <span class="metric-label">Línea Disponible Total</span>
+            <span class="metric-value">$ {{ store.usdMetrics().availableCredit | number:'1.2-2' }}</span>
+          </div>
+        </div>
+
+        <div class="metric-card primary">
+          <div class="metric-icon"><span class="material-icons">credit_score</span></div>
+          <div class="metric-info">
+            <span class="metric-label">Línea Total Autorizada</span>
+            <span class="metric-value">$ {{ store.usdMetrics().totalLimit | number:'1.2-2' }}</span>
+          </div>
+        </div>
+
+        <div class="metric-card neutral">
+          <div class="metric-icon"><span class="material-icons">pending_actions</span></div>
+          <div class="metric-info">
+            <span class="metric-label">Cierres Pendientes</span>
+            <span class="metric-value">{{ store.usdMetrics().openStatementsCount }} ($ {{ store.usdMetrics().openPayableTotal | number:'1.2-2' }})</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCIONES RÁPIDAS -->
+    <div class="dashboard-actions-card">
+      <h2 class="card-title">Acciones Operativas Rápidas</h2>
+      <div class="action-buttons-wrap">
+        <a routerLink="/current-account/purchases" class="btn btn-primary">
+          <span class="material-icons">add_shopping_cart</span>
+          <span>Nueva Venta a Crédito</span>
+        </a>
+        <a routerLink="/current-account/statements" class="btn btn-secondary">
+          <span class="material-icons">receipt_long</span>
+          <span>Generar Estados de Cuenta</span>
+        </a>
+        <a routerLink="/current-account/clients" class="btn btn-secondary">
+          <span class="material-icons">person_add</span>
+          <span>Registrar Nuevo Cliente</span>
+        </a>
+        <a routerLink="/current-account/products" class="btn btn-secondary">
+          <span class="material-icons">post_add</span>
+          <span>Agregar Producto</span>
+        </a>
+      </div>
+    </div>
+  }
+
+  <!-- CUSTOMER VIEW -->
+  @if (auth.hasRole('CUSTOMER')) {
+    @if (currentClient(); as client) {
+      <div class="customer-overview-card">
+        <div class="customer-header-info">
+          <div>
+            <span class="customer-badge">Cuenta Activa ({{ client.currency }})</span>
+            <h2 class="customer-name">{{ client.name }}</h2>
+            <p class="customer-doc">Documento: {{ client.document }} | Usuario: {{ client.username }}</p>
+          </div>
+          <div class="rate-badge">
+            <span class="rate-type">{{ client.rateType === 'EFFECTIVE' ? 'TEA' : 'TNA' }}</span>
+            <span class="rate-val">{{ client.annualRate }}%</span>
+          </div>
+        </div>
+
+        <div class="customer-balances-grid">
+          <div class="balance-item">
+            <span class="bal-label">Línea de Crédito Total</span>
+            <span class="bal-value">{{ client.currency === 'PEN' ? 'S/' : '$' }} {{ client.creditLimit | number:'1.2-2' }}</span>
+          </div>
+          <div class="balance-item warning">
+            <span class="bal-label">Deuda Actual en Capital</span>
+            <span class="bal-value">{{ client.currency === 'PEN' ? 'S/' : '$' }} {{ (client.outstandingCapital || 0) | number:'1.2-2' }}</span>
+          </div>
+          <div class="balance-item success">
+            <span class="bal-label">Crédito Disponible</span>
+            <span class="bal-value">{{ client.currency === 'PEN' ? 'S/' : '$' }} {{ (client.availableCredit || 0) | number:'1.2-2' }}</span>
+          </div>
+        </div>
+
+        <div class="progress-section">
+          <div class="progress-labels">
+            <span>Uso de la línea de crédito</span>
+            <span><strong>{{ clientCreditUsagePct() }}%</strong> utilizado</span>
+          </div>
+          <div class="progress-bar-bg" role="progressbar" [attr.aria-valuenow]="clientCreditUsagePct()" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar-fill" [style.width.%]="clientCreditUsagePct()"></div>
+          </div>
+        </div>
+
+        <div class="terms-summary-row">
+          <div class="term-box">
+            <span class="material-icons">event</span>
+            <div>
+              <span class="term-lbl">Día de Corte Mensual</span>
+              <span class="term-val">Día {{ client.cutoffDay }} (Hora: {{ client.cutoffTime }})</span>
+            </div>
+          </div>
+          <div class="term-box">
+            <span class="material-icons">event_available</span>
+            <div>
+              <span class="term-lbl">Día de Pago Pactado</span>
+              <span class="term-val">Día {{ client.paymentDay }} de cada ciclo</span>
+            </div>
+          </div>
+          <div class="term-box">
+            <span class="material-icons">calendar_month</span>
+            <div>
+              <span class="term-lbl">Plazo Máximo en Cuotas</span>
+              <span class="term-val">{{ client.maxMonths }} meses</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ESTADOS DE CUENTA PENDIENTES DEL CLIENTE -->
+      <div class="customer-open-statements-card">
+        <h3 class="card-title">Estados de Cuenta Pendientes de Pago</h3>
+        @if (customerOpenStatements().length === 0) {
+          <div class="empty-state-notice">
+            <span class="material-icons">check_circle_outline</span>
+            <span>¡Excelente! No tienes estados de cuenta pendientes de pago a la fecha.</span>
+          </div>
+        } @else {
+          <div class="statements-list">
+            @for (st of customerOpenStatements(); track st.id) {
+              <div class="st-card">
+                <div class="st-info">
+                  <span class="st-id">Cierre #{{ st.id.substring(0, 8) }}</span>
+                  <span class="st-due">Vencimiento: {{ st.dueDate }}</span>
+                  <span class="st-cutoff">Corte: {{ st.cutoffDate }}</span>
+                </div>
+                <div class="st-amount">
+                  <span class="st-amt-label">Total a Pagar:</span>
+                  <span class="st-amt-val">{{ st.currency === 'PEN' ? 'S/' : '$' }} {{ st.total | number:'1.2-2' }}</span>
+                </div>
+                <a routerLink="/current-account/my-statements" class="btn btn-sm btn-primary">
+                  Ver Detalle
+                </a>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="action-buttons-wrap" style="margin-top: 16px;">
+        <a routerLink="/current-account/my-purchases" class="btn btn-secondary">
+          <span class="material-icons">shopping_bag</span>
+          <span>Ver Mis Compras Registradas</span>
+        </a>
+        <a routerLink="/current-account/catalog" class="btn btn-secondary">
+          <span class="material-icons">store</span>
+          <span>Ver Catálogo de Productos</span>
+        </a>
+      </div>
+    } @else {
+      <div class="empty-state-notice">
+        <span class="material-icons">account_circle</span>
+        <span>Cargando datos de la cuenta de cliente...</span>
+      </div>
+    }
+  }
+</div>

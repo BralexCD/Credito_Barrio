@@ -1,0 +1,307 @@
+<div class="purchases-page">
+  <div class="page-top-bar">
+    <div>
+      <h1 class="page-title">Ventas a Crédito y Financiamiento</h1>
+      <p class="page-subtitle">Simulación de cronogramas franceses con gracia capitalizada 30E/360 y registro de compras.</p>
+    </div>
+  </div>
+
+  <div class="two-columns-layout">
+    <!-- FORMULARIO DE NUEVA COMPRA -->
+    <div class="card form-card">
+      <div class="card-header">
+        <h2 class="card-title">
+          <span class="material-icons">add_shopping_cart</span>
+          <span>Registrar Venta a Crédito</span>
+        </h2>
+      </div>
+
+      @if (errorMessage()) {
+        <div class="error-banner" role="alert">
+          <span class="material-icons">error_outline</span>
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
+
+      <form [formGroup]="purchaseForm" class="purchase-form">
+        <div class="form-group">
+          <label class="form-label">Cliente Titular *</label>
+          <select formControlName="clientId" class="form-input" (change)="onClientChange()">
+            <option value="">-- Seleccione un cliente --</option>
+            @for (c of activeClients(); track c.id) {
+              <option [value]="c.id">
+                {{ c.name }} (Línea: {{ c.currency }} {{ c.creditLimit | number:'1.2-2' }} | Disp: {{ c.currency }} {{ (c.availableCredit || 0) | number:'1.2-2' }})
+              </option>
+            }
+          </select>
+          @if (selectedClient(); as sc) {
+            <div class="client-brief">
+              <span>Moneda: <strong>{{ sc.currency }}</strong></span>
+              <span>Línea disp: <strong>{{ sc.currency }} {{ (sc.availableCredit || 0) | number:'1.2-2' }}</strong></span>
+              <span>Corte: día <strong>{{ sc.cutoffDay }}</strong> ({{ sc.cutoffTime }})</span>
+              <span>Pago: día <strong>{{ sc.paymentDay }}</strong></span>
+            </div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Producto a Financiar *</label>
+          <select formControlName="productId" class="form-input" (change)="onProductChange()">
+            <option value="">-- Seleccione un producto --</option>
+            @for (p of activeProducts(); track p.id) {
+              <option [value]="p.id">
+                {{ p.name }} (Crédito: {{ p.creditPrice | number:'1.2-2' }} / {{ p.unit }})
+              </option>
+            }
+          </select>
+          @if (selectedProduct(); as sp) {
+            <div class="product-brief">
+              <span>Precio Contado: {{ sp.cashPrice | number:'1.2-2' }}</span>
+              <span>Precio Crédito: {{ sp.creditPrice | number:'1.2-2' }}</span>
+              <span>Unidad: {{ sp.unit }}</span>
+            </div>
+          }
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Cantidad *</label>
+            <input type="number" step="0.01" min="0.01" formControlName="quantity" class="form-input" (input)="previewData.set(null)" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Modalidad de Pago *</label>
+            <select formControlName="mode" class="form-input" (change)="onModeChange()">
+              <option value="END_OF_MONTH" [disabled]="!productAllowsEndOfMonth()">
+                Pago Único a Fin de Mes
+              </option>
+              <option value="INSTALLMENTS" [disabled]="!productAllowsInstallments()">
+                En Cuotas Mensuales
+              </option>
+            </select>
+          </div>
+        </div>
+
+        @if (purchaseForm.get('mode')?.value === 'INSTALLMENTS') {
+          <div class="form-group">
+            <label class="form-label">Número de Cuotas Mensuales (1 a {{ clientMaxMonths() }}) *</label>
+            <input
+              type="number"
+              min="1"
+              [max]="clientMaxMonths()"
+              formControlName="months"
+              class="form-input"
+              (input)="previewData.set(null)"
+            />
+            <span class="field-help">Cuotas mensuales francesas con amortización ajustada a centavos.</span>
+          </div>
+        }
+
+        <div class="form-group">
+          <div class="label-with-action">
+            <label class="form-label">Fecha y Hora de Compra (Hora Local Lima) *</label>
+            <button type="button" class="link-btn" (click)="setCurrentDateTime()">
+              Usar fecha y hora actual
+            </button>
+          </div>
+          <input type="datetime-local" formControlName="purchasedAt" class="form-input" (change)="previewData.set(null)" />
+          <span class="field-help">
+            Si la compra ocurre antes de la hora de corte del día de corte, corresponde al ciclo actual; de lo contrario, ingresa al ciclo siguiente.
+          </span>
+        </div>
+
+        <div class="form-actions-row">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="calculatePreview()"
+            [disabled]="previewLoading() || purchaseForm.invalid"
+          >
+            @if (previewLoading()) {
+              <span class="spinner-sm"></span>
+              <span>Calculando en Servidor...</span>
+            } @else {
+              <span class="material-icons">calculate</span>
+              <span>Calcular Vista Previa</span>
+            }
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="confirmPurchase()"
+            [disabled]="saving() || purchaseForm.invalid"
+          >
+            @if (saving()) {
+              <span class="spinner-sm"></span>
+              <span>Registrando...</span>
+            } @else {
+              <span class="material-icons">check_circle</span>
+              <span>Confirmar y Guardar Venta</span>
+            }
+          </button>
+        </div>
+      </form>
+
+      <!-- VISTA PREVIA Y CRONOGRAMA -->
+      @if (previewData(); as prev) {
+        <div class="preview-box">
+          <div class="preview-header">
+            <span class="material-icons">preview</span>
+            <strong>Resultado Financiero del Servidor (Convención 30E/360)</strong>
+          </div>
+
+          <div class="preview-metrics-grid">
+            <div class="prev-metric">
+              <span class="prev-lbl">Capital Inicial</span>
+              <span class="prev-val">{{ clientCurrency() === 'PEN' ? 'S/' : '$' }} {{ prev.principal | number:'1.2-2' }}</span>
+            </div>
+            <div class="prev-metric">
+              <span class="prev-lbl">Días de Gracia</span>
+              <span class="prev-val">{{ prev.graceDays }} días</span>
+            </div>
+            <div class="prev-metric">
+              <span class="prev-lbl">Capital con Gracia Capitalizada</span>
+              <span class="prev-val highlight">{{ clientCurrency() === 'PEN' ? 'S/' : '$' }} {{ prev.capitalizedPrincipal | number:'1.2-2' }}</span>
+            </div>
+            <div class="prev-metric">
+              <span class="prev-lbl">Primer Vencimiento</span>
+              <span class="prev-val">{{ prev.firstDueDate }}</span>
+            </div>
+          </div>
+
+          <h4 class="schedule-subheading">Cronograma de Pagos (Método Francés):</h4>
+          <div class="table-responsive">
+            <table class="schedule-table">
+              <thead>
+                <tr>
+                  <th>N°</th>
+                  <th>Vencimiento</th>
+                  <th>Amortización</th>
+                  <th>Interés</th>
+                  <th>Cuota Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of prev.schedule; track item.number) {
+                  <tr>
+                    <td>Cuota {{ item.number }}</td>
+                    <td>{{ item.dueDate }}</td>
+                    <td>{{ clientCurrency() === 'PEN' ? 'S/' : '$' }} {{ item.capital | number:'1.2-2' }}</td>
+                    <td>{{ clientCurrency() === 'PEN' ? 'S/' : '$' }} {{ item.interest | number:'1.2-2' }}</td>
+                    <td><strong>{{ clientCurrency() === 'PEN' ? 'S/' : '$' }} {{ item.total | number:'1.2-2' }}</strong></td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- LISTA DE VENTAS REGISTRADAS -->
+    <div class="card history-card">
+      <div class="card-header">
+        <h2 class="card-title">
+          <span class="material-icons">history</span>
+          <span>Historial de Compras a Crédito Registradas</span>
+        </h2>
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Fecha/Hora</th>
+              <th>Cliente</th>
+              <th>Producto</th>
+              <th>Modalidad</th>
+              <th>Capital Inicial</th>
+              <th>Cap. Capitalizado</th>
+              <th>Cronograma</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of store.purchases(); track p.id) {
+              <tr>
+                <td>{{ p.purchasedAt | date:'yyyy-MM-dd HH:mm' }}</td>
+                <td><strong>{{ p.clientId }}</strong></td>
+                <td>{{ p.productName }} (x{{ p.quantity }})</td>
+                <td>
+                  <span class="mode-pill" [class.installments]="p.mode === 'INSTALLMENTS'">
+                    {{ p.mode === 'INSTALLMENTS' ? p.months + ' cuotas' : 'Fin de mes' }}
+                  </span>
+                </td>
+                <td class="num-cell">{{ p.principal | number:'1.2-2' }}</td>
+                <td class="num-cell highlight-num">{{ p.capitalizedPrincipal | number:'1.2-2' }}</td>
+                <td>
+                  <button class="btn btn-sm btn-secondary" (click)="viewSchedule(p)">
+                    Ver Cuotas ({{ p.schedule.length }})
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="7" class="empty-cell">
+                  No se registran ventas a crédito en este comercio.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: VER CRONOGRAMA DE COMPRA HISTÓRICA -->
+  @if (viewingPurchase(); as vp) {
+    <div class="modal-backdrop" (click)="closeViewSchedule()">
+      <div class="modal-card" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+        <div class="modal-header">
+          <h2 class="modal-title">Cronograma de Venta: {{ vp.productName }}</h2>
+          <button class="close-btn" (click)="closeViewSchedule()" aria-label="Cerrar modal">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+
+        <div class="modal-details-bar">
+          <div><span>Fecha:</span> <strong>{{ vp.purchasedAt }}</strong></div>
+          <div><span>Modalidad:</span> <strong>{{ vp.mode === 'INSTALLMENTS' ? vp.months + ' cuotas' : 'Fin de mes' }}</strong></div>
+          <div><span>Gracia:</span> <strong>{{ vp.graceDays }} días</strong></div>
+          <div><span>Cap. Final:</span> <strong>{{ vp.capitalizedPrincipal | number:'1.2-2' }}</strong></div>
+        </div>
+
+        <div class="table-responsive" style="margin-top: 16px;">
+          <table class="schedule-table">
+            <thead>
+              <tr>
+                <th>N°</th>
+                <th>Fecha Vencimiento</th>
+                <th>Capital</th>
+                <th>Interés</th>
+                <th>Cuota Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of vp.schedule; track item.number) {
+                <tr>
+                  <td>Cuota {{ item.number }}</td>
+                  <td>{{ item.dueDate }}</td>
+                  <td>{{ item.capital | number:'1.2-2' }}</td>
+                  <td>{{ item.interest | number:'1.2-2' }}</td>
+                  <td><strong>{{ item.total | number:'1.2-2' }}</strong></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeViewSchedule()">
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

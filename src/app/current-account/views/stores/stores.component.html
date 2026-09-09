@@ -1,0 +1,206 @@
+<div class="stores-page">
+  <div class="page-top-bar">
+    <div>
+      <h1 class="page-title">Gestión de Tiendas y Comercios</h1>
+      <p class="page-subtitle">Alta transaccional de comercios afiliados y administradores delegados.</p>
+    </div>
+    <button class="btn btn-primary" (click)="openCreate()">
+      <span class="material-icons">add_business</span>
+      <span>Dar de Alta Tienda</span>
+    </button>
+  </div>
+
+  <!-- STORES TABLE -->
+  <div class="table-card">
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Nombre del Comercio</th>
+            <th>Giro de Negocio</th>
+            <th>RUC / Identificador</th>
+            <th>Dirección Física</th>
+            <th>Estado</th>
+            <th class="actions-col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (s of store.stores(); track s.id) {
+            <tr>
+              <td>
+                <div class="store-name-cell">
+                  <span class="material-icons store-icon">storefront</span>
+                  <strong>{{ s.name }}</strong>
+                </div>
+              </td>
+              <td>{{ s.businessType }}</td>
+              <td><code>{{ s.taxId }}</code></td>
+              <td>{{ s.address }}</td>
+              <td>
+                <span class="status-badge" [class.active]="s.active" [class.inactive]="!s.active">
+                  {{ s.active ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td class="actions-col">
+                <button class="action-btn" (click)="openEdit(s)" title="Editar datos del comercio">
+                  <span class="material-icons">edit</span>
+                </button>
+                <button
+                  class="action-btn toggle-btn"
+                  [class.btn-warn]="s.active"
+                  [class.btn-ok]="!s.active"
+                  (click)="toggleActive(s)"
+                  [title]="s.active ? 'Desactivar comercio' : 'Reactivar comercio'"
+                >
+                  <span class="material-icons">{{ s.active ? 'block' : 'check_circle' }}</span>
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="empty-cell">
+                No hay comercios registrados en el sistema.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- MODAL: CREAR TIENDA -->
+  @if (showCreateModal()) {
+    <div class="modal-backdrop" (click)="closeCreate()">
+      <div class="modal-card" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="create-store-title">
+        <div class="modal-header">
+          <h2 id="create-store-title" class="modal-title">Alta de Nueva Tienda y Administrador</h2>
+          <button class="close-btn" (click)="closeCreate()" aria-label="Cerrar modal">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+
+        @if (errorMessage()) {
+          <div class="error-banner" role="alert">
+            <span class="material-icons">error_outline</span>
+            <span>{{ errorMessage() }}</span>
+          </div>
+        }
+
+        <form [formGroup]="createForm" (ngSubmit)="saveCreate()" class="modal-form">
+          <div class="form-section-title">Datos del Establecimiento</div>
+          
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="name" class="form-label">Nombre Comercial *</label>
+              <input id="name" type="text" formControlName="name" class="form-input" placeholder="Ej. Bodega Don Lucho" />
+            </div>
+
+            <div class="form-group">
+              <label for="businessType" class="form-label">Giro de Negocio *</label>
+              <input id="businessType" type="text" formControlName="businessType" class="form-input" placeholder="Ej. Abarrotes, Farmacia, Ferretería" />
+            </div>
+
+            <div class="form-group">
+              <label for="taxId" class="form-label">RUC / Identificador Tributario *</label>
+              <input id="taxId" type="text" formControlName="taxId" class="form-input" placeholder="11 dígitos" />
+            </div>
+
+            <div class="form-group full-width">
+              <label for="address" class="form-label">Dirección Comercial *</label>
+              <input id="address" type="text" formControlName="address" class="form-input" placeholder="Ej. Av. Los Próceres 123, Surco" />
+            </div>
+          </div>
+
+          <div class="form-section-title" style="margin-top: 16px;">Credenciales del Administrador de la Tienda</div>
+
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label for="adminName" class="form-label">Nombre Completo del Responsable *</label>
+              <input id="adminName" type="text" formControlName="adminName" class="form-input" placeholder="Ej. Luis Ramírez" />
+            </div>
+
+            <div class="form-group">
+              <label for="adminUsername" class="form-label">Usuario de Acceso *</label>
+              <input id="adminUsername" type="text" formControlName="adminUsername" class="form-input" placeholder="Ej. donlucho" />
+            </div>
+
+            <div class="form-group">
+              <label for="adminPassword" class="form-label">Contraseña Inicial (mín. 8 caracteres) *</label>
+              <input id="adminPassword" type="password" formControlName="adminPassword" class="form-input" placeholder="Mínimo 8 caracteres" />
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeCreate()" [disabled]="saving()">
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary" [disabled]="saving() || createForm.invalid">
+              @if (saving()) { Guardando... } @else { Registrar Tienda }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- MODAL: EDITAR TIENDA -->
+  @if (editingStore(); as s) {
+    <div class="modal-backdrop" (click)="closeEdit()">
+      <div class="modal-card" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+        <div class="modal-header">
+          <h2 class="modal-title">Editar Tienda: {{ s.name }}</h2>
+          <button class="close-btn" (click)="closeEdit()" aria-label="Cerrar modal">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+
+        @if (errorMessage()) {
+          <div class="error-banner" role="alert">
+            <span class="material-icons">error_outline</span>
+            <span>{{ errorMessage() }}</span>
+          </div>
+        }
+
+        <form [formGroup]="editForm" (ngSubmit)="saveEdit()" class="modal-form">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Nombre Comercial *</label>
+              <input type="text" formControlName="name" class="form-input" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Giro de Negocio *</label>
+              <input type="text" formControlName="businessType" class="form-input" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">RUC *</label>
+              <input type="text" formControlName="taxId" class="form-input" />
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label">Dirección *</label>
+              <input type="text" formControlName="address" class="form-input" />
+            </div>
+
+            <div class="form-group full-width checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" formControlName="active" />
+                <span>Tienda activa para operaciones y ventas a crédito</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeEdit()" [disabled]="saving()">
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary" [disabled]="saving() || editForm.invalid">
+              @if (saving()) { Guardando... } @else { Actualizar Datos }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

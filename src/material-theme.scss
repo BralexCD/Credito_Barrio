@@ -1,0 +1,24 @@
+﻿@use '@angular/material' as mat;
+
+html {
+  height: 100%;
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$violet-palette,
+        tertiary: mat.$azure-palette,
+      ),
+      typography: Inter,
+      density: 0,
+    )
+  );
+}
+
+body {
+  color-scheme: light;
+  background-color: var(--credit-bg);
+  color: var(--credit-text);
+  font-family: 'Inter', Roboto, Arial, sans-serif;
+  margin: 0;
+  height: 100%;
+}

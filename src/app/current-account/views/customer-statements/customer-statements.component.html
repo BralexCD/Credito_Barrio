@@ -1,0 +1,195 @@
+<div class="customer-statements-page">
+  <div class="page-top-bar">
+    <div>
+      <h1 class="page-title">Mis Estados de Cuenta</h1>
+      <p class="page-subtitle">Consulta de cierres mensuales, liquidaciones detalladas a la fecha y comprobantes de estado en CSV.</p>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Nro Estado</th>
+            <th>Fecha de Corte</th>
+            <th>Fecha Vencimiento</th>
+            <th>Capital</th>
+            <th>Interés Pactado</th>
+            <th>Total Cierre</th>
+            <th>Estado</th>
+            <th>Fecha de Pago</th>
+            <th class="actions-col">Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (st of myStatements(); track st.id) {
+            <tr>
+              <td><span class="code-id">#{{ st.id.substring(0, 8) }}</span></td>
+              <td>{{ st.cutoffDate }}</td>
+              <td><span class="due-text">{{ st.dueDate }}</span></td>
+              <td class="num-cell">{{ st.currency === 'PEN' ? 'S/' : '$' }} {{ st.principal | number:'1.2-2' }}</td>
+              <td class="num-cell">{{ st.currency === 'PEN' ? 'S/' : '$' }} {{ st.interest | number:'1.2-2' }}</td>
+              <td class="num-cell total-cell">{{ st.currency === 'PEN' ? 'S/' : '$' }} {{ st.total | number:'1.2-2' }}</td>
+              <td>
+                <span class="status-pill" [class.open]="st.status === 'OPEN'" [class.paid]="st.status === 'PAID'">
+                  {{ st.status === 'OPEN' ? 'Pendiente' : 'Cancelado' }}
+                </span>
+              </td>
+              <td>
+                @if (st.paidAt) {
+                  <span class="paid-date">{{ st.paidAt | date:'yyyy-MM-dd' }}</span>
+                } @else {
+                  <span class="text-muted">—</span>
+                }
+              </td>
+              <td class="actions-col">
+                <button class="btn btn-sm btn-primary" (click)="openDetail(st)">
+                  <span class="material-icons">description</span>
+                  <span>Ver Liquidación</span>
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="9" class="empty-cell">
+                No tienes estados de cuenta emitidos actualmente.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- MODAL: DETALLE DE LIQUIDACIÓN PARA CLIENTE -->
+  @if (selectedStatementId()) {
+    <div class="modal-backdrop" (click)="closeDetail()">
+      <div class="modal-card modal-lg" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+        <div class="modal-header">
+          <div>
+            <h2 class="modal-title">Detalle de Estado de Cuenta</h2>
+            <span class="modal-subtitle">ID: {{ selectedStatementId() }}</span>
+          </div>
+          <button class="close-btn" (click)="closeDetail()" aria-label="Cerrar modal">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+
+        @if (detailLoading()) {
+          <div class="loading-box">
+            <span class="spinner-sm"></span>
+            <span>Consultando liquidación en el servidor...</span>
+          </div>
+        } @else if (statementDetail(); as det) {
+          <div class="as-of-bar">
+            <div class="as-of-control">
+              <label for="asOfCustInput" class="as-of-lbl">Ver Liquidación a la fecha:</label>
+              <input
+                id="asOfCustInput"
+                type="date"
+                [value]="asOfDate()"
+                [min]="det.cutoffDate"
+                (change)="onAsOfDateChange($any($event.target).value)"
+                class="form-input date-input-sm"
+              />
+              <span class="as-of-help">Muestra la mora calculada exactamente a esta fecha (mínimo día de corte).</span>
+            </div>
+
+            <button class="btn btn-sm btn-secondary" (click)="downloadCsv()">
+              <span class="material-icons">file_download</span>
+              <span>Descargar CSV</span>
+            </button>
+          </div>
+
+          <div class="settlement-summary-grid">
+            <div class="sum-card">
+              <span class="sum-lbl">Fecha de Corte</span>
+              <span class="sum-val">{{ det.cutoffDate }}</span>
+            </div>
+            <div class="sum-card">
+              <span class="sum-lbl">Fecha de Vencimiento</span>
+              <span class="sum-val text-due">{{ det.dueDate }}</span>
+            </div>
+            <div class="sum-card">
+              <span class="sum-lbl">Días de Mora</span>
+              <span class="sum-val" [class.text-warn]="det.lateDays > 0">
+                {{ det.lateDays }} días{{ det.status === 'PAID' ? ' (cerrados al pago)' : '' }}
+              </span>
+            </div>
+            <div class="sum-card">
+              <span class="sum-lbl">Estado</span>
+              <span class="sum-val">{{ det.status === 'OPEN' ? 'Pendiente' : 'Cancelado' }}</span>
+            </div>
+          </div>
+
+          <div class="allocation-box">
+            <h4 class="box-title">Desglose de la Liquidación:</h4>
+            <div class="alloc-grid">
+              <div class="alloc-item">
+                <span>Interés Moratorio a la fecha:</span>
+                <span class="warn">{{ det.currency === 'PEN' ? 'S/' : '$' }} {{ det.allocation.lateInterest | number:'1.2-2' }}</span>
+              </div>
+              <div class="alloc-item">
+                <span>Interés Compensatorio:</span>
+                <span>{{ det.currency === 'PEN' ? 'S/' : '$' }} {{ det.allocation.interest | number:'1.2-2' }}</span>
+              </div>
+              <div class="alloc-item">
+                <span>Capital Amortizado:</span>
+                <span>{{ det.currency === 'PEN' ? 'S/' : '$' }} {{ det.allocation.capital | number:'1.2-2' }}</span>
+              </div>
+              <div class="alloc-item total-row">
+                <span>
+                  {{ det.status === 'PAID' ? 'Total Liquidado y Cancelado:' : 'Total Exigible a la fecha:' }}
+                </span>
+                <span class="total">
+                  {{ det.currency === 'PEN' ? 'S/' : '$' }} {{ (det.status === 'PAID' ? (det.paidAmount ?? (det.total + det.lateInterest)) : det.payableTotal) | number:'1.2-2' }}
+                </span>
+              </div>
+              @if (det.status === 'PAID') {
+                <div class="alloc-item" style="border-bottom: none; padding-top: 4px;">
+                  <span style="color: #15803d; font-weight: 700;">Saldo pendiente actual de este estado:</span>
+                  <span style="color: #15803d; font-weight: 700;">{{ det.currency === 'PEN' ? 'S/' : '$' }} 0.00</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <h4 class="box-title" style="margin-top: 16px;">Detalle de Compras y Cuotas:</h4>
+          <div class="table-responsive">
+            <table class="schedule-table">
+              <thead>
+                <tr>
+                  <th>Fecha Compra</th>
+                  <th>Producto</th>
+                  <th>Modalidad</th>
+                  <th>Capital</th>
+                  <th>Interés</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of det.items; track item.purchaseId + item.installmentNumber) {
+                  <tr>
+                    <td>{{ item.purchasedAt | date:'yyyy-MM-dd' }}</td>
+                    <td>{{ item.productName }}</td>
+                    <td>{{ item.installmentNumber ? 'Cuota ' + item.installmentNumber : 'Fin de mes' }}</td>
+                    <td>{{ det.currency === 'PEN' ? 'S/' : '$' }} {{ item.capital | number:'1.2-2' }}</td>
+                    <td>{{ det.currency === 'PEN' ? 'S/' : '$' }} {{ item.interest | number:'1.2-2' }}</td>
+                    <td><strong>{{ det.currency === 'PEN' ? 'S/' : '$' }} {{ item.total | number:'1.2-2' }}</strong></td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeDetail()">
+              Cerrar
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

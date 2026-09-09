@@ -1,0 +1,74 @@
+﻿.layout-container {
+  height: 100dvh;
+  background: var(--credit-bg);
+}
+
+.layout-sidenav {
+  width: 252px;
+  min-width: 252px;
+  max-width: 252px;
+  border-right: 0;
+  background: var(--credit-primary);
+  color: #ffffff;
+  /* !important needed: Angular Material's own `.mat-drawer-transition .mat-drawer` rule
+     shares the same specificity and otherwise replaces this whole shorthand, silently
+     dropping the width transition in favor of Material's default transform-only one. */
+  transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+    max-width 0.28s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.layout-sidenav.collapsed {
+  width: 72px !important;
+  min-width: 72px !important;
+  max-width: 72px !important;
+  overflow: visible !important;
+}
+
+.layout-body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  background: var(--credit-bg);
+  /* Driven directly by the same `collapsed` state as `.layout-sidenav`'s width (rather than
+     Material's `autosize`/ResizeObserver, which only reports the drawer's size after it has
+     already finished resizing) so the content shift animates in lockstep with the rail, not
+     sequentially after it. !important overrides Material's own static inline margin-left and
+     its `.mat-drawer-transition .mat-drawer-content` rule, both of which would otherwise win. */
+  margin-left: 252px !important;
+  transition: margin-left 0.28s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.layout-body.collapsed {
+  margin-left: 72px !important;
+}
+
+.layout-content {
+  flex: 1 1 auto;
+  padding: 28px 24px 20px;
+  background: var(--credit-bg);
+}
+
+@media (max-width: 820px) {
+  .layout-sidenav {
+    width: 264px;
+    min-width: 264px;
+    max-width: 264px;
+  }
+
+  /* Below this width the sidenav is an overlay (mode="over"), so it never pushes content. */
+  .layout-body,
+  .layout-body.collapsed {
+    margin-left: 0 !important;
+  }
+
+  .layout-content {
+    padding: 20px 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .layout-sidenav,
+  .layout-body {
+    transition-duration: 0.01ms !important;
+  }
+}

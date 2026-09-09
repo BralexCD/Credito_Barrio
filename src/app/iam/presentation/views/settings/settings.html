@@ -1,0 +1,224 @@
+<div class="settings-page">
+  <header class="settings-header">
+    <h1>{{ 'settings.title' | translate }}</h1>
+    <p>{{ 'settings.subtitle' | translate }}</p>
+  </header>
+
+  <mat-card class="settings-card">
+    <mat-card-header class="settings-card-header">
+      <span class="settings-card-icon"><mat-icon aria-hidden="true">person</mat-icon></span>
+      <div>
+        <mat-card-title>{{ 'settings.profile-title' | translate }}</mat-card-title>
+        <p class="settings-card-subtitle">{{ 'settings.profile-subtitle' | translate }}</p>
+      </div>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form class="settings-form" [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+        <div class="form-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'settings.name' | translate }}</mat-label>
+            <input matInput formControlName="name" autocomplete="given-name" />
+            @if (profileForm.controls.name.hasError('required')) {
+              <mat-error>{{ 'settings.name-required' | translate }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'settings.last-name' | translate }}</mat-label>
+            <input matInput formControlName="lastName" autocomplete="family-name" />
+            @if (profileForm.controls.lastName.hasError('required')) {
+              <mat-error>{{ 'settings.last-name-required' | translate }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'settings.username' | translate }}</mat-label>
+            <input matInput formControlName="username" autocomplete="username" />
+            @if (profileForm.controls.username.hasError('required')) {
+              <mat-error>{{ 'settings.username-required' | translate }}</mat-error>
+            } @else if (profileForm.controls.username.hasError('minlength')) {
+              <mat-error>{{ 'settings.username-minlength' | translate }}</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        @if (store.updateProfileError()) {
+          <p class="settings-message settings-error">{{ store.updateProfileError() }}</p>
+        }
+        @if (store.updateProfileSuccess()) {
+          <p class="settings-message settings-success">{{ store.updateProfileSuccess() }}</p>
+        }
+
+        <div class="form-actions">
+          <button mat-stroked-button type="button" [disabled]="store.isSettingsSaving()" (click)="cancelProfile()">
+            {{ 'settings.cancel' | translate }}
+          </button>
+          <button
+            mat-flat-button
+            class="settings-submit"
+            type="submit"
+            [disabled]="profileForm.invalid || store.isSettingsSaving()"
+          >
+            {{ (store.isSettingsSaving() ? 'settings.saving' : 'settings.save') | translate }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="settings-card">
+    <mat-card-header class="settings-card-header">
+      <span class="settings-card-icon"><mat-icon aria-hidden="true">mail</mat-icon></span>
+      <div>
+        <mat-card-title>{{ 'settings.email-title' | translate }}</mat-card-title>
+        <p class="settings-card-subtitle">{{ 'settings.email-subtitle' | translate }}</p>
+      </div>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form class="settings-form" [formGroup]="emailForm" (ngSubmit)="saveEmail()">
+        <div class="form-grid form-grid-single">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'settings.email' | translate }}</mat-label>
+            <input matInput type="email" formControlName="email" autocomplete="email" />
+            @if (emailForm.controls.email.hasError('required')) {
+              <mat-error>{{ 'settings.email-required' | translate }}</mat-error>
+            } @else if (emailForm.controls.email.hasError('email')) {
+              <mat-error>{{ 'settings.email-invalid' | translate }}</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        @if (store.updateEmailError()) {
+          <p class="settings-message settings-error">{{ store.updateEmailError() }}</p>
+        }
+        @if (store.updateEmailSuccess()) {
+          <p class="settings-message settings-success">{{ store.updateEmailSuccess() }}</p>
+        }
+
+        <div class="form-actions">
+          <button mat-stroked-button type="button" [disabled]="store.isSettingsSaving()" (click)="cancelEmail()">
+            {{ 'settings.cancel' | translate }}
+          </button>
+          <button
+            mat-flat-button
+            class="settings-submit"
+            type="submit"
+            [disabled]="emailForm.invalid || store.isSettingsSaving()"
+          >
+            {{ (store.isSettingsSaving() ? 'settings.saving' : 'settings.save') | translate }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="settings-card">
+    <mat-card-header class="settings-card-header">
+      <span class="settings-card-icon"><mat-icon aria-hidden="true">lock</mat-icon></span>
+      <div>
+        <mat-card-title>{{ 'settings.password-title' | translate }}</mat-card-title>
+        <p class="settings-card-subtitle">{{ 'settings.password-subtitle' | translate }}</p>
+      </div>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form class="settings-form" [formGroup]="passwordForm" (ngSubmit)="savePassword()">
+        <div class="form-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'settings.current-password' | translate }}</mat-label>
+            <input
+              matInput
+              [type]="hideCurrentPassword() ? 'password' : 'text'"
+              formControlName="currentPassword"
+              autocomplete="current-password"
+            />
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="toggleCurrentPasswordVisibility()"
+              [attr.aria-label]="(hideCurrentPassword() ? 'iam.sign-in.show-password' : 'iam.sign-in.hide-password') | translate"
+            >
+              <mat-icon>{{ hideCurrentPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            @if (passwordForm.controls.currentPassword.hasError('required') && passwordForm.controls.currentPassword.touched) {
+              <mat-error>{{ 'settings.current-password-required' | translate }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'settings.new-password' | translate }}</mat-label>
+            <input
+              matInput
+              [type]="hideNewPassword() ? 'password' : 'text'"
+              formControlName="newPassword"
+              autocomplete="new-password"
+            />
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="toggleNewPasswordVisibility()"
+              [attr.aria-label]="(hideNewPassword() ? 'iam.sign-in.show-password' : 'iam.sign-in.hide-password') | translate"
+            >
+              <mat-icon>{{ hideNewPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            @if (passwordForm.controls.newPassword.touched && passwordForm.controls.newPassword.hasError('required')) {
+              <mat-error>{{ 'settings.new-password-required' | translate }}</mat-error>
+            } @else if (passwordForm.controls.newPassword.touched && passwordForm.controls.newPassword.hasError('minlength')) {
+              <mat-error>{{ 'settings.new-password-minlength' | translate }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'settings.confirm-password' | translate }}</mat-label>
+            <input
+              matInput
+              [type]="hideConfirmPassword() ? 'password' : 'text'"
+              formControlName="confirmPassword"
+              autocomplete="new-password"
+              [errorStateMatcher]="confirmPasswordMatcher"
+            />
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="toggleConfirmPasswordVisibility()"
+              [attr.aria-label]="(hideConfirmPassword() ? 'iam.sign-in.show-password' : 'iam.sign-in.hide-password') | translate"
+            >
+              <mat-icon>{{ hideConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            @if (passwordForm.controls.confirmPassword.touched && passwordForm.controls.confirmPassword.hasError('required')) {
+              <mat-error>{{ 'settings.confirm-password-required' | translate }}</mat-error>
+            } @else if (passwordForm.hasError('passwordMismatch') && passwordForm.controls.confirmPassword.touched) {
+              <mat-error>{{ 'settings.password-mismatch' | translate }}</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        @if (store.updatePasswordError()) {
+          <p class="settings-message settings-error">{{ store.updatePasswordError() }}</p>
+        }
+        @if (store.updatePasswordSuccess()) {
+          <p class="settings-message settings-success">{{ store.updatePasswordSuccess() }}</p>
+        }
+
+        <div class="form-actions">
+          <button mat-stroked-button type="button" [disabled]="store.isSettingsSaving()" (click)="cancelPassword()">
+            {{ 'settings.cancel' | translate }}
+          </button>
+          <button
+            mat-flat-button
+            class="settings-submit"
+            type="submit"
+            [disabled]="passwordForm.invalid || store.isSettingsSaving()"
+          >
+            {{ (store.isSettingsSaving() ? 'settings.saving' : 'settings.save') | translate }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

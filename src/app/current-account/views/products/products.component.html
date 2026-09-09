@@ -1,0 +1,199 @@
+<div class="products-page">
+  <div class="page-top-bar">
+    <div>
+      <h1 class="page-title">Catálogo de Productos del Comercio</h1>
+      <p class="page-subtitle">Gestión de productos, precios de contado y lista a crédito, unidades y modalidades elegibles.</p>
+    </div>
+    <button class="btn btn-primary" (click)="openCreate()">
+      <span class="material-icons">add_box</span>
+      <span>Nuevo Producto</span>
+    </button>
+  </div>
+
+  <div class="currency-info-box" role="note">
+    <span class="material-icons">info</span>
+    <span>
+      <strong>Regla de Precios:</strong> Los importes de contado y crédito se expresan numéricamente y se liquidan en la divisa de la cuenta del cliente comprador (PEN o USD) sin conversión cambiaria.
+    </span>
+  </div>
+
+  <!-- PRODUCTS GRID -->
+  <div class="products-grid">
+    @for (p of store.products(); track p.id) {
+      <div class="product-card" [class.inactive]="!p.active">
+        <div class="product-image-container">
+          @if (p.imageUrl) {
+            <img [src]="p.imageUrl" [alt]="p.name" class="product-img" onerror="this.style.display='none'" />
+          } @else {
+            <div class="product-placeholder-icon">
+              <span class="material-icons">inventory_2</span>
+            </div>
+          }
+          <span class="status-pill" [class.active]="p.active" [class.inactive]="!p.active">
+            {{ p.active ? 'Activo' : 'Inactivo' }}
+          </span>
+        </div>
+
+        <div class="product-body">
+          <div class="product-meta">
+            <span class="product-brand">{{ p.brand }}</span>
+            <span class="product-unit">Unidad: {{ p.unit }}</span>
+          </div>
+
+          <h2 class="product-name">{{ p.name }}</h2>
+          @if (p.description) {
+            <p class="product-desc">{{ p.description }}</p>
+          }
+
+          <div class="prices-row">
+            <div class="price-item">
+              <span class="price-lbl">Precio Contado:</span>
+              <span class="price-val">{{ p.cashPrice | number:'1.2-2' }}</span>
+            </div>
+            <div class="price-item credit">
+              <span class="price-lbl">Precio Lista Crédito:</span>
+              <span class="price-val credit-val">{{ p.creditPrice | number:'1.2-2' }}</span>
+            </div>
+          </div>
+
+          <div class="modalities-tag-row">
+            <span class="mod-tag" [class.enabled]="p.allowEndOfMonth">
+              <span class="material-icons">{{ p.allowEndOfMonth ? 'check' : 'close' }}</span>
+              Fin de Mes
+            </span>
+            <span class="mod-tag" [class.enabled]="p.allowInstallments">
+              <span class="material-icons">{{ p.allowInstallments ? 'check' : 'close' }}</span>
+              Cuotas
+            </span>
+          </div>
+
+          <div class="product-footer">
+            <span class="supplier-info">Prov: {{ p.supplier }}</span>
+            <div class="actions-group">
+              <button class="action-icon-btn" (click)="openEdit(p)" title="Editar producto">
+                <span class="material-icons">edit</span>
+              </button>
+              <button
+                class="action-icon-btn"
+                [class.warn]="p.active"
+                (click)="toggleActive(p)"
+                [title]="p.active ? 'Desactivar' : 'Activar'"
+              >
+                <span class="material-icons">{{ p.active ? 'visibility_off' : 'visibility' }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    } @empty {
+      <div class="empty-products-notice">
+        <span class="material-icons">inventory_2</span>
+        <p>No hay productos registrados en el catálogo. Utilice el botón superior para agregar el primer producto.</p>
+      </div>
+    }
+  </div>
+
+  <!-- MODAL: CREAR / EDITAR PRODUCTO -->
+  @if (showModal()) {
+    <div class="modal-backdrop" (click)="closeModal()">
+      <div class="modal-card" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+        <div class="modal-header">
+          <h2 class="modal-title">
+            {{ editingProduct() ? 'Editar Producto: ' + editingProduct()?.name : 'Agregar Producto al Catálogo' }}
+          </h2>
+          <button class="close-btn" (click)="closeModal()" aria-label="Cerrar modal">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+
+        @if (errorMessage()) {
+          <div class="error-banner" role="alert">
+            <span class="material-icons">error_outline</span>
+            <span>{{ errorMessage() }}</span>
+          </div>
+        }
+
+        <form [formGroup]="productForm" (ngSubmit)="saveProduct()" class="modal-form">
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label class="form-label">Nombre del Producto *</label>
+              <input type="text" formControlName="name" class="form-input" placeholder="Ej. Arroz Superior 5kg" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Marca *</label>
+              <input type="text" formControlName="brand" class="form-input" placeholder="Ej. Costeño" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Proveedor *</label>
+              <input type="text" formControlName="supplier" class="form-input" placeholder="Ej. Distribuidora Lima" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Unidad de Medida *</label>
+              <select formControlName="unit" class="form-input">
+                <option value="und">Unidad (und)</option>
+                <option value="kg">Kilogramo (kg)</option>
+                <option value="paquete">Paquete</option>
+                <option value="caja">Caja</option>
+                <option value="litro">Litro (L)</option>
+                <option value="bolsa">Bolsa</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">URL de Imagen (Opcional)</label>
+              <input type="url" formControlName="imageUrl" class="form-input" placeholder="https://..." />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Precio Contado (Efectivo) *</label>
+              <input type="number" step="0.01" min="0.01" formControlName="cashPrice" class="form-input" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Precio Lista a Crédito *</label>
+              <input type="number" step="0.01" min="0.01" formControlName="creditPrice" class="form-input" />
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label">Descripción</label>
+              <textarea formControlName="description" class="form-input form-textarea" rows="2" placeholder="Detalles o especificaciones"></textarea>
+            </div>
+
+            <div class="form-group full-width">
+              <span class="form-label">Modalidades de Venta a Crédito Permitidas:</span>
+              <div class="checkbox-row">
+                <label class="checkbox-label">
+                  <input type="checkbox" formControlName="allowEndOfMonth" />
+                  <span>Permitir Pago Único a Fin de Mes</span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" formControlName="allowInstallments" />
+                  <span>Permitir Venta en Cuotas Mensuales</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group full-width">
+              <label class="checkbox-label">
+                <input type="checkbox" formControlName="active" />
+                <span>Producto activo y disponible para registrar compras</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeModal()" [disabled]="saving()">
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary" [disabled]="saving() || productForm.invalid">
+              @if (saving()) { Guardando... } @else { Guardar Producto }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>
